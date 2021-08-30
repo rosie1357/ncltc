@@ -8,7 +8,8 @@ FILES:
   data_model: NC AWS Data Model.xlsx
 
 DB_PARAMETERS:
-  database_name: nctcl-rds-db
+  schema_names: 
+    raw: rawdata
   db_cluster_arn: arn:aws:rds:us-east-1:838494257041:cluster:nctcl-rds-db
   db_credentials_secrets_store_arn: arn:aws:secretsmanager:us-east-1:838494257041:secret:rds-db-credentials/cluster-CTRRD427C7XG7CJF7CVP3VSSPU/nctcldevadmin-skZIuQ
   profile: 838494257041_Project_Developer

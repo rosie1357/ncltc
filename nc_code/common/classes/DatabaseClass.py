@@ -7,11 +7,11 @@ import boto3
 
 class DatabaseClass(object):
 
-    def __init__(self, db_parameters):
+    def __init__(self, db_params):
 
         # set all database parameters (passed in from config class)
 
-        for attrib, value in vars(db_parameters).items():
+        for attrib, value in db_params.items():
             setattr(self, attrib, value)
 
 
@@ -26,7 +26,7 @@ class DatabaseClass(object):
         return session.client('rds-data', region_name=self.region)
 
 
-    def execute_statement(self, sql):
+    def execute_statement(self, sql, schema='raw'):
 
         """
             execute_statement method to wrap around any sql code to pass to the database.
@@ -34,9 +34,12 @@ class DatabaseClass(object):
 
             params:
                 sql string: sql code to execute
+                schema string: schema to pull from, default is raw. 
+                    Options:
+                        raw -> pulls from rawdata
 
             returns:
-                string database response based on sql code
+                dictionary database response based on sql code
 
             example:
             
@@ -48,14 +51,14 @@ class DatabaseClass(object):
 
         response = self.gen_rds_client().execute_statement(
             secretArn=self.db_credentials_secrets_store_arn,
-            database=self.database_name,
+            database=self.schema_names[schema],
             resourceArn=self.db_cluster_arn,
             sql=sql
         )
 
         return response
 
-    def batch_execute_statement(self, sql, sql_parameter_sets):
+    def batch_execute_statement(self, sql, sql_parameter_sets, schema='raw'):
 
         """
             batch_execute_statement function to wrap around a sql statement and a two-dimensional array (set of lists) as params,
@@ -64,9 +67,12 @@ class DatabaseClass(object):
             params:
                 sql string: sql code to execute
                 sql_parameter_sets list: sql insert statements
+                schema string: schema to pull from, default is raw. 
+                    Options:
+                        raw -> pulls from rawdata
 
             returns:
-                string database response based on sql code
+                dictionary database response based on sql code
 
             example of insert into tblProviderDetails (first three cols):
 
@@ -88,7 +94,7 @@ class DatabaseClass(object):
         """
         response = self.gen_rds_client().batch_execute_statement(
             secretArn=self.db_credentials_secrets_store_arn,
-            database=self.database_name,
+            database=self.schema_names[schema],
             resourceArn=self.db_cluster_arn,
             sql=sql,
             parameterSets=sql_parameter_sets
