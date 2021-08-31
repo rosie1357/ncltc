@@ -1,15 +1,14 @@
 """
-    DatabaseClass 
+    Main Database class to set database attributes and create generic client and execute methods
 """
 
 import boto3
 
-
-class DatabaseClass(object):
+class Database(object):
 
     def __init__(self, db_params):
 
-        # set all database parameters (passed in from config class)
+        # set all database parameters (passed in from config class) as class attributes
 
         for attrib, value in db_params.items():
             setattr(self, attrib, value)
@@ -30,7 +29,7 @@ class DatabaseClass(object):
 
         """
             execute_statement method to wrap around any sql code to pass to the database.
-            will call either the rds statement execute_statement
+            will call the rds statement execute_statement
 
             params:
                 sql string: sql code to execute
