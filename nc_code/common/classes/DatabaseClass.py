@@ -40,7 +40,7 @@ class Database(object):
 
         """
 
-        return f"insert into {schema}.{tbl} ({', '.join(cols)}) values ({':' + ', :'.join(cols)})"
+        return f"insert into {self.schema_names[schema]}.{tbl} ({', '.join(cols)}) values ({':' + ', :'.join(cols)})"
 
 
     def execute_statement(self, sql, schema='raw'):

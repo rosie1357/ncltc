@@ -160,3 +160,10 @@ class DatabaseInsert(Database):
 
         return sql_parameter_sets, mismatches
 
+    def sub_batch_execute_statement(self):
+        """
+        sub_batch_execute_statement method to call parent batch_execute_statement and pass created sql_insert and param sets
+        
+        """
+
+        self.batch_execute_statement(sql = self.sql_insert, sql_parameter_sets = self.sql_parameter_sets)
