@@ -1,11 +1,22 @@
 from common.tasks.create_config_class import create_config_class
-from common.classes.DatabaseClass import Database
 from common.classes.DatabaseInsertClass import DatabaseInsert
 
 
-config_class = create_config_class()
+config = create_config_class()
 
-db_class = DatabaseInsert(db_params = vars(config_class)['DB_PARAMETERS'])
+import pandas as pd
+import os
+
+# hack way to test - read in calendar layout and df, then pass to DatabaseInsert class
+
+layout = pd.read_excel(os.path.join(config.PATHS['db_design_dir'], config.FILES['data_model']), sheet_name='calendarRef', header=4)
+print(layout)
+
+df = pd.read_csv(os.path.join(config.PATHS['data_dir'], 'calendar.txt'), delimiter='\t')
+print(df.head())
+
+dbinsert = DatabaseInsert(df = df.head(5), layout_df = layout.rename(columns={'SQL Name' : 'colname', 'PostgreSQL Type' : 'sqltype'}),
+                          db_params = vars(config)['DB_PARAMETERS'])
 
 
-print(db_class.execute_statement(sql='select * from rawdata.calendarRef'))
+print(dbinsert.sql_parameter_sets)
