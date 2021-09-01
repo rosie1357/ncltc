@@ -24,6 +24,24 @@ class Database(object):
         session = boto3.Session(profile_name=self.profile)
         return session.client('rds-data', region_name=self.region)
 
+    def create_sql_insert(self, tbl, cols, schema='raw'):
+
+        """
+            method create_sql_insert to create sql insert statement to pass to batch_execute_statement, using input table and cols
+
+            params:
+                tbl string: database table name to insert into
+                cols list: list of all columns to insert into 
+                schema string: schema to pull from, default is raw. 
+                    Options:
+                        raw -> pulls from rawdata
+
+            returns string with sql statement to pass to batch_execute_statement
+
+        """
+
+        return f"insert into {schema}.{tbl} ({', '.join(cols)}) values ({':' + ', :'.join(cols)})"
+
 
     def execute_statement(self, sql, schema='raw'):
 

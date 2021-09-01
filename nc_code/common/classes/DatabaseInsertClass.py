@@ -17,14 +17,16 @@ class DatabaseInsert(Database):
     
     """
 
-    def __init__(self, df, layout_df, db_params):
+    def __init__(self, df, layout_df, tbl, db_params):
         
-        self.df, self.layout_df = df, layout_df
+        self.df, self.layout_df, self.tbl = df, layout_df, tbl
         super().__init__(db_params)
 
         self.colmapping_dict = self.gen_layout_mapping()
 
         self.sql_parameter_sets, self.mismatches = self.gen_batch_inserts()
+
+        self.sql_insert = self.create_sql_insert(tbl = self.tbl, cols=[col for col in self.colmapping_dict.keys()])
 
     def gen_layout_mapping(self):
         """

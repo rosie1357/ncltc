@@ -15,8 +15,13 @@ print(layout)
 df = pd.read_csv(os.path.join(config.PATHS['data_dir'], 'calendar.txt'), delimiter='\t')
 print(df.head())
 
-dbinsert = DatabaseInsert(df = df.head(5), layout_df = layout.rename(columns={'SQL Name' : 'colname', 'PostgreSQL Type' : 'sqltype'}),
+dbinsert = DatabaseInsert(df = df.head(5), layout_df = layout.rename(columns={'SQL Name' : 'colname', 'PostgreSQL Type' : 'sqltype'}), tbl = 'calendarRef',
                           db_params = vars(config)['DB_PARAMETERS'])
 
 
 print(dbinsert.sql_parameter_sets)
+print(dbinsert.sql_insert)
+
+# call batch execute method to insert to db table
+
+#dbinsert.batch_execute_statement()
