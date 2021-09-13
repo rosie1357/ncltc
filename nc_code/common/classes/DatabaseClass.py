@@ -118,3 +118,11 @@ class Database(object):
         )
 
         return response
+
+    def get_rec_count(self, tbl):
+        """
+        Method get_rec_count return the record count from given table
+        """
+
+        response = self.execute_statement(sql = f"select count(1) from {tbl}")
+        return list(response['records'][0][0].values())[0]

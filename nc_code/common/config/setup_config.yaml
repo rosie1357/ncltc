@@ -3,6 +3,7 @@
 PATHS:
   data_dir: ${BASE_DIR}\2. Data Management\04 Data Sources
   db_design_dir: ${BASE_DIR}\2. Data Management\05 Database Design
+  log_dir: ${BASE_DIR}\2. Data Management\08 Programming\python_logs
 
 FILES:
   data_model: NC AWS Data Model.xlsx

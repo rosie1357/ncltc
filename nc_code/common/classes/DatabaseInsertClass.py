@@ -17,9 +17,9 @@ class DatabaseInsert(Database):
     
     """
 
-    def __init__(self, df, layout_df, tbl, db_params):
+    def __init__(self, df, layout_df, tbl, db_params, insert_type, log):
         
-        self.df, self.layout_df, self.tbl = df, layout_df, tbl
+        self.df, self.layout_df, self.tbl, self.insert_type, self.log = df, layout_df, tbl, insert_type, log
         super().__init__(db_params)
 
         self.colmapping_dict = self.gen_layout_mapping()
@@ -163,7 +163,22 @@ class DatabaseInsert(Database):
     def sub_batch_execute_statement(self):
         """
         sub_batch_execute_statement method to call parent batch_execute_statement and pass created sql_insert and param sets
+        must first check insert type to know how to insert
         
         """
+        
+        # if only-once, must check if any recs in table and if so, do NOT insert
+
+        if self.insert_type == 'only-once':
+            recs = self.get_rec_count(tbl=self.tbl)
+            if recs > 0:
+                self.log.info(f"{recs} already exist in database for given table - \nno new records inserted because insert_type == {self.insert_type}")
+
+                return
 
         self.batch_execute_statement(sql = self.sql_insert, sql_parameter_sets = self.sql_parameter_sets)
+        
+        recs = self.get_rec_count(tbl=self.tbl)
+        self.log.info(f"{recs} records inserted into database!")
+
+

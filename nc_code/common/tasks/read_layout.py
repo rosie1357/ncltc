@@ -27,5 +27,5 @@ def read_layout(tblname, **kwargs):
 
     df = pd.read_excel(filepath, sheet_name=tblname, header=4)
 
-    return df.rename(columns={'SQL Name' : 'colname', 'PostgreSQL Type' : 'sqltype'})
+    return df.rename(columns={'SQL Name' : 'colname', 'MySQL Type' : 'sqltype'})
 
