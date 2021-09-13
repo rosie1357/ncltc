@@ -4,7 +4,7 @@
 
 from common.utils.read_config import read_config
 
-class ConfigClass(object):
+class Config(object):
 
     def __init__(self):
         pass

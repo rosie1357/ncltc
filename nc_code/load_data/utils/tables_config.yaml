@@ -1,0 +1,10 @@
+# config file to list all table-specific information for data that must be loaded once to database
+# layout should be db table name as key and all else as values
+
+
+calendarRef:
+  indir_ref: data_dir
+  infile: calendar.txt
+  delimiter: '\t'
+  dtypes:
+    CALMM : str

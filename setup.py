@@ -11,7 +11,7 @@ setup(
     license='Mathematica',
     entry_points={
         'console_scripts': [
-            # add when ready
+            'load_data = load_data.cli:main',
         ],
     },
 )
