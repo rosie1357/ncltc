@@ -3,8 +3,11 @@
 
 
 calendarRef:
-  indir_ref: data_dir
-  infile: calendar.txt
+  bucket_ref: raw_data
+  infile: Calendar.txt
+  file_type: csv
   delimiter: '\t'
   dtypes:
-    CALMM : str
+    CALMM: str
+  renames:
+    DATE: CALDATE

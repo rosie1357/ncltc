@@ -11,7 +11,7 @@ from common.tasks.read_layout import read_layout
 from common.classes.DatabaseInsertClass import DatabaseInsert
 from common.utils.general_funcs import generate_logger, print_df_to_log
 
-from .classes.ReadRaw import ReadRawtoLoad
+from .classes.S3DataReadClass import S3DataRead
 
 def main(args=None):
 
@@ -41,12 +41,12 @@ def main(args=None):
 
     layout_df = read_layout(table_name)
 
-    # create raw data class for given table - reads in raw data and converts to df following params given in tables_config
+    # create s3 data class for given table - reads in raw data from s3 and converts to df following params given in tables_config
 
-    raw_df = ReadRawtoLoad(table_name = table_name, **vars(config)).df
+    raw_df = S3DataRead(table_name = table_name, **vars(config)).df
 
     # create dbinsert class for given table, passing all needed params to connect to database from config class
-
+    
     dbinsert = DatabaseInsert(df = raw_df, layout_df = layout_df, tbl = 'calendarRef', db_params = vars(config)['DB_PARAMETERS'], insert_type=insert_type, log=log)
 
     # write any mismatches to log
