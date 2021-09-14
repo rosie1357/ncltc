@@ -121,8 +121,18 @@ class Database(object):
 
     def get_rec_count(self, tbl):
         """
-        Method get_rec_count return the record count from given table
+        Method get_rec_count to return the record count from given table
         """
 
         response = self.execute_statement(sql = f"select count(1) from {tbl}")
         return list(response['records'][0][0].values())[0]
+
+    def delete_all(self, tbl):
+        """
+        Method delete_all to delete all recs from given table - confirms successful deletion
+        """
+
+        self.execute_statement(sql = f"delete from {tbl}")
+        recs = self.get_rec_count(tbl=tbl)
+        
+        assert recs == 0, f"All records NOT deleted from table {tbl} - CHECK THIS"

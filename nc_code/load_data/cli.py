@@ -24,7 +24,7 @@ def main(args=None):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--table_name', required=True)
-    parser.add_argument('--insert_type', required=False, default='only-once')
+    parser.add_argument('--insert_type', required=False, default='only-once', choices=['only-once','overwrite','append'])
     args = parser.parse_args()
     
     table_name, insert_type = args.table_name, args.insert_type
@@ -35,7 +35,7 @@ def main(args=None):
 
     # create log
 
-    log = generate_logger(logdir = Path(config.PATHS['log_dir']) / 'load_data', logname = f"load_data_{table_name}", init_message=f"Load of {table_name}")
+    log = generate_logger(logdir = Path(config.PATHS['log_dir']) / 'load_data', logname = f"load_data_{table_name}", init_message=f"LOAD OF TABLE: {table_name}")
 
     # call read_layout function to return layout for given table as df
 

@@ -166,19 +166,37 @@ class DatabaseInsert(Database):
         must first check insert type to know how to insert
         
         """
+
+        self.log.info(f"Inserting records with insert_type = {self.insert_type}")
+
+        # get number of recs already in table
+
+        recs0 = self.get_rec_count(tbl=self.tbl)
         
         # if only-once, must check if any recs in table and if so, do NOT insert
 
         if self.insert_type == 'only-once':
-            recs = self.get_rec_count(tbl=self.tbl)
-            if recs > 0:
-                self.log.info(f"{recs} already exist in database for given table - \nno new records inserted because insert_type == {self.insert_type}")
+            if recs0 > 0:
+                self.log.info(f"--{recs0} already exist in database for given table - \nno new records inserted")
 
                 return
+
+        # if overwrite, delete all recs before inserting
+
+        if self.insert_type == 'overwrite':
+            self.delete_all(tbl=self.tbl)
+            self.log.info(f"--All records ({recs0}) deleted from database")
+
+        # if append, just write # of records to log before inserting current recs
+
+        elif self.insert_type == 'append':
+            self.log.info(f"--{recs0} records already in database")
+
+        # insert records
 
         self.batch_execute_statement(sql = self.sql_insert, sql_parameter_sets = self.sql_parameter_sets)
         
         recs = self.get_rec_count(tbl=self.tbl)
-        self.log.info(f"{recs} records inserted into database!")
+        self.log.info(f"--{recs} records inserted into database!")
 
 
