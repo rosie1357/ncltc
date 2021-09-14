@@ -30,10 +30,9 @@ class S3DataRead(object):
 
         """
         Method to generate s3 client to use in s3 calls
-        
         """
 
-        session = boto3.Session(profile_name='838494257041_Project_Developer')
+        session = boto3.Session(profile_name=self.DB_PARAMETERS['profile'])
         return session.client('s3')
 
     def get_s3_obj(self):
@@ -44,7 +43,6 @@ class S3DataRead(object):
     def read_raw(self):
         """
         Method read_raw to read raw data from s3 according to params specified in config and return df to set as self.df
-        
         """
 
         # read in conditionally based on type

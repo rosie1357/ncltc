@@ -44,7 +44,7 @@ def main(args=None):
     # create s3 data class for given table - reads in raw data from s3 and converts to df following params given in tables_config
 
     raw_df = S3DataRead(table_name = table_name, **vars(config)).df
-
+    
     # create dbinsert class for given table, passing all needed params to connect to database from config class
     
     dbinsert = DatabaseInsert(df = raw_df, layout_df = layout_df, tbl = 'calendarRef', db_params = vars(config)['DB_PARAMETERS'], insert_type=insert_type, log=log)
