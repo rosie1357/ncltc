@@ -9,5 +9,3 @@ calendarRef:
   delimiter: '\t'
   dtypes:
     CALMM: str
-  renames:
-    DATE: CALDATE

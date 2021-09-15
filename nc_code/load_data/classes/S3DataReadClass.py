@@ -50,9 +50,11 @@ class S3DataRead(object):
         if self.file_type == 'csv':
             df = pd.read_csv(io.BytesIO(self.s3_response['Body'].read()), delimiter = self.delimiter, engine='python', dtype = self.dtypes or {})
 
-        # apply any renames specified in config
+        # apply any renames specified in kwargs
 
-        df.rename(columns = self.renames, inplace=True)
+        if hasattr(self, 'renames'):
+
+            df.rename(columns = self.renames, inplace=True)
 
         # all files can have erroneous extra blank lines - drop and return df
 

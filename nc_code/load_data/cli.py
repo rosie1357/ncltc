@@ -42,8 +42,9 @@ def main(args=None):
     layout_df = read_layout(table_name)
 
     # create s3 data class for given table - reads in raw data from s3 and converts to df following params given in tables_config
+    # use layout to create dictionary of renames to map raw col to db col name
 
-    raw_df = S3DataRead(table_name = table_name, **vars(config)).df
+    raw_df = S3DataRead(table_name = table_name, **{**vars(config), **{'renames' : dict(list(zip(layout_df['rawcol'],layout_df['colname'])))}}).df
     
     # create dbinsert class for given table, passing all needed params to connect to database from config class
     
