@@ -24,7 +24,7 @@ class DatabaseInsert(Database):
 
         self.colmapping_dict = self.gen_layout_mapping()
 
-        self.sql_parameter_sets, self.mismatches = self.gen_batch_inserts()
+        self.param_batches, self.mismatches = self.gen_batch_inserts()
 
         self.sql_insert = self.create_sql_insert(tbl = self.tbl, cols=[col for col in self.colmapping_dict.keys()])
 
@@ -147,18 +147,27 @@ class DatabaseInsert(Database):
         
         """
 
-        insertlists = self.df.apply(self.create_insert_statement, axis=1)
+        # create sql parameter sets and df of mismatches - to avoid timeout error, insert up to 2000 recs at a time
 
         mismatches = pd.DataFrame()
-        sql_parameter_sets = []
+        param_batches = {}
 
-        for i in range(len(insertlists)):
-            sql_parameter_sets.append(insertlists[i][0])
-            mismatch = insertlists[i][1]
-            if len(mismatch) > 0:
-                mismatches = pd.concat([mismatches, pd.DataFrame(mismatch)])
+        chunk=2000
+        list_tmp_df = [self.df.iloc[i:i+chunk] for i in range(0, self.df.shape[0],chunk)]
 
-        return sql_parameter_sets, mismatches
+        for i in range(0,len(list_tmp_df)):
+
+            insertlists = list(list_tmp_df[i].apply(self.create_insert_statement, axis=1))
+
+            sql_parameter_sets = []
+
+            for j in range(len(insertlists)):
+                sql_parameter_sets.append(insertlists[j][0])
+                mismatches = mismatches.append(insertlists[j][1])
+
+            param_batches[i] = sql_parameter_sets
+
+        return param_batches, mismatches
 
     def sub_batch_execute_statement(self):
         """
@@ -192,9 +201,11 @@ class DatabaseInsert(Database):
         elif self.insert_type == 'append':
             self.log.info(f"--{recs0} records already in database")
 
-        # insert records
+        # insert records - must insert in chunks to avoid timeout error
 
-        self.batch_execute_statement(sql = self.sql_insert, sql_parameter_sets = self.sql_parameter_sets)
+        for num, sql_parameter_sets in self.param_batches.items():
+
+            self.batch_execute_statement(sql = self.sql_insert, sql_parameter_sets = sql_parameter_sets)
         
         recs = self.get_rec_count(tbl=self.tbl)
         self.log.info(f"--{recs} records inserted into database!")

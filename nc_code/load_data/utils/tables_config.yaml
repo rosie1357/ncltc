@@ -9,3 +9,13 @@ calendarRef:
   delimiter: '\t'
   dtypes:
     CALMM: str
+
+tcldStatus:
+  bucket_ref: raw_data
+  infile: Individual_status_history_data_07192021.csv
+  file_type: csv
+
+cndsXwalk:
+  bucket_ref: raw_data
+  infile: TCLD_Alt_CNDS_DOB_DOD.csv
+  file_type: csv

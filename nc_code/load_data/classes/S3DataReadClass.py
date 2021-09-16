@@ -48,7 +48,13 @@ class S3DataRead(object):
         # read in conditionally based on type
 
         if self.file_type == 'csv':
-            df = pd.read_csv(io.BytesIO(self.s3_response['Body'].read()), delimiter = self.delimiter, engine='python', dtype = self.dtypes or {})
+            if not hasattr(self, 'delimiter'):
+                self.delimiter=','
+
+            if not hasattr(self, 'dtypes'):
+                self.dtypes={}
+
+            df = pd.read_csv(io.BytesIO(self.s3_response['Body'].read()), delimiter = self.delimiter, engine='python', dtype = self.dtypes )
 
         # apply any renames specified in kwargs
 

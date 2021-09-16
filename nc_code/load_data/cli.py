@@ -45,10 +45,12 @@ def main(args=None):
     # use layout to create dictionary of renames to map raw col to db col name
 
     raw_df = S3DataRead(table_name = table_name, **{**vars(config), **{'renames' : dict(list(zip(layout_df['rawcol'],layout_df['colname'])))}}).df
+
+    log.info(f"{raw_df.shape[0]} counts on raw table\n")
     
     # create dbinsert class for given table, passing all needed params to connect to database from config class
     
-    dbinsert = DatabaseInsert(df = raw_df, layout_df = layout_df, tbl = 'calendarRef', db_params = vars(config)['DB_PARAMETERS'], insert_type=insert_type, log=log)
+    dbinsert = DatabaseInsert(df = raw_df, layout_df = layout_df, tbl = table_name, db_params = vars(config)['DB_PARAMETERS'], insert_type=insert_type, log=log)
 
     # write any mismatches to log
 
