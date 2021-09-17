@@ -45,20 +45,11 @@ class S3DataRead(object):
         Method read_raw to read raw data from s3 according to params specified in config and return df to set as self.df
         """
 
-        # read in conditionally based on type
+        # read in conditionally based on type, add all readin_kwargs set in config to read_csv()
 
         if self.file_type == 'csv':
-            if not hasattr(self, 'delimiter'):
-                self.delimiter=','
-
-            if not hasattr(self, 'dtypes'):
-                self.dtypes={}
-
-            if not hasattr(self, 'parse_dates'):
-                self.parse_dates=[]
         
-
-            df = pd.read_csv(io.BytesIO(self.s3_response['Body'].read()), delimiter = self.delimiter, engine='python', dtype = self.dtypes, parse_dates = self.parse_dates )
+            df = pd.read_csv(io.BytesIO(self.s3_response['Body'].read()), engine='python', **self.readin_kwargs)
 
         # apply any renames specified in kwargs
 

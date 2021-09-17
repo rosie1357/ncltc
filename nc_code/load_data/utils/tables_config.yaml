@@ -6,9 +6,10 @@ calendarRef:
   bucket_ref: raw_data
   infile: Calendar.txt
   file_type: csv
-  delimiter: '\t'
-  dtypes:
-    CALMM: str
+  readin_kwargs:
+    delimiter: '\t'
+    dtypes:
+      CALMM: str
 
 tcldStatus:
   bucket_ref: raw_data
@@ -24,6 +25,15 @@ tcldStatus:
   bucket_ref: raw_data
   infile: Individual_status_history_data_07192021.csv
   file_type: csv
-  parse_dates:
-    - Status Begin
-    - Status End
+  readin_kwargs:
+    parse_dates:
+      - Status Begin
+      - Status End
+
+hearts:
+  bucket_ref: raw_data
+  infile: TLCI_Adm_201901_202012_20200806_with_Discharge_Destination.csv
+  file_type: csv
+  readin_kwargs:
+    encoding:
+      windows-1252
