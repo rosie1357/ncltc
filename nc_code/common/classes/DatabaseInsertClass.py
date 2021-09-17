@@ -4,7 +4,8 @@
 """
 import pandas as pd
 import re
-from dateutil.parser import parse as parse_date
+#from dateutil.parser import parse as parse_date
+from common.utils.date_parser import parse_century
 
 from .DatabaseClass import Database
 from ..utils.db_util_funcs import convert_types
@@ -91,7 +92,7 @@ class DatabaseInsert(Database):
                 try:
                     if sqltype == 'DATE':
                         if isinstance(row[col], str):
-                            value = parse_date(row[col]).strftime('%Y-%m-%d')
+                            value = parse_century(row[col]).strftime('%Y-%m-%d')
                             
                         else:
                             value = row[col].strftime('%Y-%m-%d')

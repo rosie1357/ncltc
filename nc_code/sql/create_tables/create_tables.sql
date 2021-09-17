@@ -1,15 +1,11 @@
 /*
-This file contains code to CREATE tables in the nctcl-rds-db database cluster.
+This file contains code to CREATE empty tables in the nctcl-rds-db database cluster.
 
 See README.md in parent folder with instructions on how to generate the sql code and keep track
 of changes/updates to tables.
 
-- will decide on naming conventions of scripts, etc
-
 */
 
--- ticket: https://mathematicampr.atlassian.net/browse/NCTCL-51
--- SQL query to create empty calendarRef table
 CREATE TABLE rawdata.calendarRef
 (
 CALDATE DATE NOT NULL PRIMARY KEY,
@@ -27,7 +23,7 @@ DAYSINMONTH CHAR(2) NOT NULL
 
 CREATE TABLE rawdata.cndsXwalk
 (
-CNDSID CHAR(10) NOT NULL PRIMARY KEY,
+CNDSID VARCHAR(10) NOT NULL PRIMARY KEY,
 CNDSID1 CHAR(10) NULL,
 CNDSID2 CHAR(10) NULL,
 CNDSID3 CHAR(10) NULL,
@@ -36,4 +32,19 @@ CNDSID5 CHAR(10) NULL,
 CNDSID6 CHAR(10) NULL,
 BIRTHDATE DATE NULL,
 DEATHDATE DATE NULL
+);
+
+CREATE TABLE rawdata.tcldStatus
+(
+FQSTATUS VARCHAR(100) NULL,
+TCLIDATE DATE NULL,
+BIRTHDATE DATE NULL,
+LMEMCO VARCHAR(100) NULL,
+TCLDID CHAR(5) NULL,
+STATUS VARCHAR(100) NOT NULL,
+STATUSBEGIN DATETIME NOT NULL,
+STATUSEND DATETIME NULL,
+SUPERSTATUS VARCHAR(25) NULL,
+CNDSID VARCHAR(10) NOT NULL,
+PRIMARY KEY (CNDSID, STATUS, STATUSBEGIN)
 );

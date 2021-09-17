@@ -54,7 +54,11 @@ class S3DataRead(object):
             if not hasattr(self, 'dtypes'):
                 self.dtypes={}
 
-            df = pd.read_csv(io.BytesIO(self.s3_response['Body'].read()), delimiter = self.delimiter, engine='python', dtype = self.dtypes )
+            if not hasattr(self, 'parse_dates'):
+                self.parse_dates=[]
+        
+
+            df = pd.read_csv(io.BytesIO(self.s3_response['Body'].read()), delimiter = self.delimiter, engine='python', dtype = self.dtypes, parse_dates = self.parse_dates )
 
         # apply any renames specified in kwargs
 
