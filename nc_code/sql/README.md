@@ -1,8 +1,22 @@
-# **SQL Scripts**
+# **SQL Scripts/Database Notes**
 
 This folder of the repo contains SQL scripts to be run directly against the nctcl-rds-db database cluster.
 
-## **1. Table Creation Code**
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [**SQL Scripts**](#sql-scripts)
+  - [**1. Table Creation Code**](#1-table-creation-code)
+  - [**2. Table Update Code**](#2-table-update-code)
+- [**Database Notes**](#database-notes)
+  - [**1. Primary Keys**](#1-primary-keys)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## **SQL Scripts**
+
+### **1. Table Creation Code**
 
 All scripts in the subfolder [create_tables](./create_tables) have been run in Query Editor to create the actual database tables.
 
@@ -46,7 +60,7 @@ Follow these steps to create a new database table:
     describe table schemaname.tablename
    ```
 
-## **2. Table Update Code**
+### **2. Table Update Code**
 
 All scripts in the subfolder [update_tables](./update_tables) have been run in Query Editor to update the database tables.
 
@@ -68,3 +82,34 @@ Follow these steps to update a database table:
 3. So that the create tables SQL stays current, also update the existing code to create the table in [create_tables](./create_tables) to reflect all changes (i.e. so that if the table had to be recreated from scratch, it would match the new layout).
 
 4. Follow the above instructions for creating a table, #3-5 to similarly create a PR, run the code, and confirm table looks as intended.
+
+## **Database Notes**
+
+### **1. Primary Keys**
+
+A database can only have one primary key, however this primary key can be made up of multiple columns. The primary key (combination of columns) must be unique and cannot be null.
+
+For any tables that require multiple columns to serve as a combined primary key (e.g. tcldStatus, where the four columns CNDSID, STATUS, STATUSBEGIN, and STATUSEND combine to make the primary key), the SQL create text must be slightly altered to note this:
+
+```
+CREATE TABLE rawdata.tcldStatus
+(
+FQSTATUS VARCHAR(100) NULL,
+TCLIDATE DATE NULL,
+BIRTHDATE DATE NULL,
+LMEMCO VARCHAR(100) NULL,
+TCLDID CHAR(5) NULL,
+STATUS VARCHAR(100) NOT NULL,
+STATUSBEGIN DATETIME NOT NULL,
+STATUSEND DATETIME NOT NULL,
+SUPERSTATUS VARCHAR(25) NULL,
+CNDSID VARCHAR(10) NOT NULL,
+PRIMARY KEY (CNDSID, STATUS, STATUSBEGIN, STATUSEND)
+);
+```
+
+Note two changes:
+1. The words 'PRIMARY KEY' are removed from the individual rows
+2. The key word 'PRIMARY KEY' line is added to the bottom of the table, with the four columns in parens
+
+Similar to using just one column as a primary key, the database insert will error if there are duplicate values across the combination of all columns.
