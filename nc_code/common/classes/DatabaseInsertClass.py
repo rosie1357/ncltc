@@ -4,7 +4,6 @@
 """
 import pandas as pd
 import re
-#from dateutil.parser import parse as parse_date
 from common.utils.date_parser import parse_century
 
 from .DatabaseClass import Database
