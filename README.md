@@ -4,6 +4,8 @@ The NCTLC repo contains code to populate the AWS database and create measures fo
 
 This README will explain how to set up the local environment, add your AWS credentials, and submit the modules from the command line.
 
+**Note**: There is currently only one module (*load_data*), but additional modules for data processing/measure creation will be added when created.
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
@@ -14,6 +16,8 @@ This README will explain how to set up the local environment, add your AWS crede
     - [**Create credentials empty files**](#create-credentials-empty-files)
     - [**Add project credentials**](#add-project-credentials)
     - [**Confirm credentials**](#confirm-credentials)
+- [**Running the Modules**](#running-the-modules)
+  - [**1. load_data**](#1-load_data)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -112,3 +116,43 @@ aws configure --profile 838494257041_Project_Developer
  See [AWS docs](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) for more details on using `awscli`.
 
 The default values returned should be the new credentials (with all but the last four characters masked).
+
+## **Running the Modules**
+
+### **1. load_data**
+
+The module load_data is the first main module, which will load all raw data submitted by the state. It retrieves the data from S3, performs the minimum cleaning needed to be able to get into the database, and then inserts into that file-specific table in the database.
+
+**NOTE**: There is a set of SQL code with a separate README in the [sql](nc_code/sql) subfolder. This subfolder describes how to create/update each table in the database, which must happen before data load.
+
+To load a raw data file to the database, you must do two things:
+1. Add an entry to the [tables_config.yaml](nc_code/load_data/utils/tables_config.yaml) file for the given file. See the yaml file for examples of files that have been loaded.
+
+    As an example, here is the entry for the calendar reference file, which was inserted into the **calendarRef** table in the database:
+
+    ```
+    calendarRef:
+      bucket_ref: raw_data
+      infile: Calendar.txt
+      file_type: csv
+      readin_kwargs:
+        delimiter: '\t'
+        dtypes:
+          CALMM: str
+    ```
+
+    The outermost key is the name of the target table. The only other required parameters are:
+      - bucket_ref: reference name for bucket that contains the raw data
+      - infile: name of raw data in S3 bucket
+      - file_type: file type (currently only allow csv, will update to allow .sas7bdat when the state submits)
+
+    There are optional parameters that can be specified in `readin_kwargs`, which will all be passed as additional parameters to the file read in command (e.g. pd.read_csv()). In the example above, the Calendar.txt file had to be read in as tab-delimited with the column CALMM specified as string to retain leading zeros.
+
+2. Submit at the command line using the entry point defined in [setup.py](setup.py), with one required (*--table_name*) and one optional (*--insert_type*) argument:
+
+    ```bash
+    load_data --table_name calendarRef --insert_type overwrite
+    ```
+    See the [cli.py](nc_code/load_data/cli.py) script for more information on the parameters.
+
+    After each run, a log will be generated in the directory specified as *log_dir* in the main [setup_config.yaml](nc_code/common/config/setup_config.yaml) file. The log will give input and output counts, and will print any records that were unable to be inserted into the database due to mismatch data type/length.
