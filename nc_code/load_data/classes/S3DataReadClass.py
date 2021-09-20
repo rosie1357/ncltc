@@ -47,9 +47,16 @@ class S3DataRead(object):
 
         # read in conditionally based on type, add all readin_kwargs set in config to read_csv()
 
+        if not hasattr(self, 'readin_kwargs'):
+            self.readin_kwargs = {}
+
         if self.file_type == 'csv':
         
             df = pd.read_csv(io.BytesIO(self.s3_response['Body'].read()), engine='python', **self.readin_kwargs)
+
+        if hasattr(self, 'fill_nulls'):
+            for col, value in self.fill_nulls.items():
+                df[col].fillna(value=value, inplace=True)
 
         # apply any renames specified in kwargs
 

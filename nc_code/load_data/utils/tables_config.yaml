@@ -8,13 +8,8 @@ calendarRef:
   file_type: csv
   readin_kwargs:
     delimiter: '\t'
-    dtypes:
+    dtype:
       CALMM: str
-
-tcldStatus:
-  bucket_ref: raw_data
-  infile: Individual_status_history_data_07192021.csv
-  file_type: csv
 
 cndsXwalk:
   bucket_ref: raw_data
@@ -25,6 +20,8 @@ tcldStatus:
   bucket_ref: raw_data
   infile: Individual_status_history_data_07192021.csv
   file_type: csv
+  fill_nulls:
+    Status End: '9999-12-31'
   readin_kwargs:
     parse_dates:
       - Status Begin
@@ -37,3 +34,14 @@ hearts:
   readin_kwargs:
     encoding:
       windows-1252
+
+nctracksProf:
+  bucket_ref: raw_data
+  infile: NCTracks_PROF_01012020_03312020.csv
+  file_type: csv
+  readin_kwargs:
+    dtype:
+      ADMN_CNTY_CD: str
+      RES_CNTY_CD: str
+      CARR_ID: str
+
