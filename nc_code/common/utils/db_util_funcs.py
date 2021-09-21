@@ -14,11 +14,11 @@ def convert_types(sqltype):
 
     """
 
-    if sqltype.startswith(('INTEGER','SMALLINT')): 
+    if sqltype.startswith(('INT','SMALLINT','TINYINT')): 
         return 'longValue'
     
     elif sqltype.startswith(('VARCHAR','CHAR','DATE')):
         return 'stringValue'
     
-    elif sqltype.startswith('DECIMAL'):
+    elif sqltype.startswith(('DECIMAL','FLOAT')):
         return 'doubleValue'

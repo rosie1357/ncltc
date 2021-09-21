@@ -44,4 +44,17 @@ nctracksProf:
       ADMN_CNTY_CD: str
       RES_CNTY_CD: str
       CARR_ID: str
+      DMH_LME_BASE_NBR: str
+
+nctracksInst:
+  bucket_ref: raw_data
+  infile: NCTracks_INST_CYs_2019_2020.csv
+  file_type: csv
+  readin_kwargs:
+    dtype:
+      ADMN_CNTY_CD: str
+      RES_CNTY_CD: str
+      CARR_ID: str
+      DMH_LME_BASE_NBR: str
+
 

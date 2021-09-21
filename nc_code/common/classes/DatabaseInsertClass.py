@@ -121,9 +121,9 @@ class DatabaseInsert(Database):
 
                         # if DECIMAL, extract integer and decimal allowed values, and raise error if integer part of value is longer than allowed integer length
 
-                        extract = re.match(r'DECIMAL\((\d+),(\d+)\)',sqltype)
+                        extract = re.match(r'(DECIMAL|FLOAT)\((\d+),(\d+)\)',sqltype)
                         if extract is not None:
-                            if len(str(int(value))) > int(extract.group(1)) - int(extract.group(2)):
+                            if len(str(int(value))) > int(extract.group(2)) - int(extract.group(3)):
                                 raise ValueError
 
                 except:
