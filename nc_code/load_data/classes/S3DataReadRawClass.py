@@ -3,7 +3,9 @@ import pandas as pd
 import boto3
 import io
 
-class S3DataRead(object):
+from common.classes.S3DataReadClass import S3DataRead
+
+class S3DataReadRaw(S3DataRead):
     """
     class S3DataRead to read in data from s3 given specific params (file type, delimters, etc), and
     create df from raw file based on params set in config
@@ -12,6 +14,7 @@ class S3DataRead(object):
 
 
     def __init__(self, table_name, **kwargs):
+
         self.table_name = table_name
 
         # set all config params as attributes
@@ -19,26 +22,11 @@ class S3DataRead(object):
         for attrib, value in kwargs.items():
             setattr(self, attrib, value)
 
-        self.bucket = self.S3_BUCKETS[self.bucket_ref]
+        # initialize with parents args
 
-        self.s3 = self.gen_s3_client()
-        self.s3_response = self.get_s3_obj()
+        super().__init__(self.DB_PARAMETERS['profile'], self.S3_BUCKETS[self.bucket_ref], self.infile)
 
         self.df = self.read_raw()
-
-    def gen_s3_client(self):
-
-        """
-        Method to generate s3 client to use in s3 calls
-        """
-
-        session = boto3.Session(profile_name=self.DB_PARAMETERS['profile'])
-        return session.client('s3')
-
-    def get_s3_obj(self):
-        return self.s3.get_object(Bucket=self.bucket,
-                                  Key = self.infile)
-
 
     def read_raw(self):
         """

@@ -11,7 +11,7 @@ from common.tasks.read_layout import read_layout
 from common.classes.DatabaseInsertClass import DatabaseInsert
 from common.utils.general_funcs import generate_logger, print_df_to_log
 
-from .classes.S3DataReadClass import S3DataRead
+from .classes.S3DataReadRawClass import S3DataReadRaw
 
 def main(args=None):
 
@@ -44,7 +44,7 @@ def main(args=None):
     # create s3 data class for given table - reads in raw data from s3 and converts to df following params given in tables_config
     # use layout to create dictionary of renames to map raw col to db col name
 
-    raw_df = S3DataRead(table_name = table_name, **{**vars(config), **{'renames' : dict(list(zip(layout_df['rawcol'],layout_df['colname'])))}}).df
+    raw_df = S3DataReadRaw(table_name = table_name, **{**vars(config), **{'renames' : dict(list(zip(layout_df['rawcol'],layout_df['colname'])))}}).df
 
     log.info(f"{raw_df.shape[0]} counts on raw table\n")
     
@@ -61,3 +61,4 @@ def main(args=None):
     # call batch execute method to insert to db table!
 
     dbinsert.sub_batch_execute_statement()
+    
