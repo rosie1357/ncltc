@@ -9,6 +9,7 @@ FILES:
 
 S3_BUCKETS:
   raw_data: nctl-data-bucket-us-east-1-838494257041 
+  data_models: nctlc-data-models
 
 DB_PARAMETERS:
   schema_names: 
