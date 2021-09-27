@@ -3,9 +3,9 @@ import pandas as pd
 import boto3
 import io
 
-from common.classes.S3DataReadClass import S3DataRead
+from common.classes.S3DataConnectClass import S3DataConnect
 
-class S3DataReadRaw(S3DataRead):
+class S3DataReadRaw(S3DataConnect):
     """
     class S3DataRead to read in data from s3 given specific params (file type, delimters, etc), and
     create df from raw file based on params set in config
@@ -22,9 +22,11 @@ class S3DataReadRaw(S3DataRead):
         for attrib, value in kwargs.items():
             setattr(self, attrib, value)
 
-        # initialize with parents args
+        # initialize with parents args, get s3 obj
 
         super().__init__(self.DB_PARAMETERS['profile'], self.S3_BUCKETS[self.bucket_ref], self.infile)
+
+        self.s3_response = self.get_s3_obj()
 
         self.df = self.read_raw()
 
@@ -35,12 +37,9 @@ class S3DataReadRaw(S3DataRead):
 
         # read in conditionally based on type, add all readin_kwargs set in config to read_csv()
 
-        if not hasattr(self, 'readin_kwargs'):
-            self.readin_kwargs = {}
-
         if self.file_type == 'csv':
         
-            df = pd.read_csv(io.BytesIO(self.s3_response['Body'].read()), engine='python', **self.readin_kwargs)
+            df = pd.read_csv(io.BytesIO(self.s3_response['Body'].read()), engine='python', **self.get_attrib('readin_kwargs',{}))
 
         if hasattr(self, 'fill_nulls'):
             for col, value in self.fill_nulls.items():

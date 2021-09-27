@@ -1,19 +1,20 @@
 
-import types
 
-class copyattributes(object):
+def add_attrib(cls):
     """
-    class copyattributes to copy attributes from passed class and add to decorated class
+    function add_attrib to be used to decorate class to add method get_attrib()
     
     """
-    def __init__(self, source):
-        self.source = source
-
-    def __call__(self, target):
-        for attr, value in self.source.__dict__.items():
-            if attr.startswith('__'):
-                continue
-            if isinstance(value, (property, types.FunctionType)):
-                continue
-            setattr(target, attr, value)
-        return target
+    
+    def get_attrib(self, key, default):
+        """
+        function get_attrib to return value of key IF exists as attrib on class instance, otherwise default
+        params:
+            key: name of key to attempt to return (attribute of class instance)
+            default: default value to return if not exists on instance
+        """
+    
+        return self.__dict__.get(key) or default
+    
+    setattr(cls, 'get_attrib', get_attrib)
+    return cls

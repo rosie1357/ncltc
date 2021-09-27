@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 from common.tasks.create_config_class import create_config_class
-from common.classes.S3DataReadClass import S3DataReadExcel
+from common.classes.S3DataConnectClass import S3DataReadExcel
 
 def read_layout(tblname, **kwargs):
     """

@@ -33,7 +33,7 @@ def main(args=None):
 
     config = create_config_class(**{'tables_config.yaml' : {'path' : Path(os.path.join(os.path.dirname( __file__ ),'utils')), 'outer_dict': table_name}})
 
-    # create log
+    # create log - will create temp log then copy to bucket when complete
 
     log = generate_logger(logdir = Path(config.PATHS['log_dir']) / 'load_data', logname = f"load_data_{table_name}", init_message=f"LOAD OF TABLE: {table_name}")
 
