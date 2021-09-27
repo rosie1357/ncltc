@@ -67,4 +67,4 @@ def main(args=None):
     logpath = log.root.handlers[0].baseFilename
 
     S3DataConnect(config.DB_PARAMETERS['profile'], config.S3_BUCKETS['python_logs'], logpath, \
-                  outfile=logpath.split('\\')[-1]).write_s3_obj()
+                  outfile='load_data/' + logpath.split('\\')[-1]).write_s3_obj()
