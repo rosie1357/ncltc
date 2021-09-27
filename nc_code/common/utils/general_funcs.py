@@ -1,5 +1,8 @@
 import logging
 import time
+import tempfile
+import os
+from pathlib import Path
 
 def print_df_to_log(*, log, df, message, print_index=False):
     """
@@ -19,12 +22,12 @@ def print_df_to_log(*, log, df, message, print_index=False):
     log.info(f"\n{message}:\n")
     log.info(f"{df.to_string(index=print_index)}") 
 
-def generate_logger(*, logdir, logname, packages_suppress = ['boto3','botocore','numexpr'], suppress_addtl = [], init_message = None):
+def generate_logger(*, logdir=None, logname, packages_suppress = ['boto3','botocore','numexpr'], suppress_addtl = [], init_message = None):
     """
     Function generate_logger to generate log file for given directory and log name. Sets level to INFO
     
     params:
-        logdir Path: directory for log file
+        logdir Path or None: directory for log file, if not specified, assume temp file created
         logname str: name of log file, will add datetime stamp to end of name
         packages_suppress list: default list of packages to set logging level to critical to prevent notes to log
         suppress_addtl list: additional packages to suppress, default is none
@@ -34,6 +37,10 @@ def generate_logger(*, logdir, logname, packages_suppress = ['boto3','botocore',
         logger
 
     """
+
+    if logdir == None:
+        fd, fname = tempfile.mkstemp()
+        logdir = Path(os.path.dirname(fname))
     
     logging.basicConfig(filename=logdir / f'{logname}_{time.strftime("%Y%m%d-%H%M%S")}.log', filemode='w', level=logging.INFO, format='%(message)s')
     

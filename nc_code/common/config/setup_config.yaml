@@ -1,15 +1,12 @@
 # config setup for NC common module
 
-PATHS:
-  db_design_dir: ${BASE_DIR}\2. Data Management\05 Database Design
-  log_dir: ${BASE_DIR}\2. Data Management\08 Programming\python_logs
-
 FILES:
   data_model: NC AWS Data Model.xlsx
 
 S3_BUCKETS:
   raw_data: nctl-data-bucket-us-east-1-838494257041 
   data_models: nctlc-data-models
+  python_logs: nctlc-python-logs
 
 DB_PARAMETERS:
   schema_names: 

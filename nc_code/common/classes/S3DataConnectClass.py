@@ -38,6 +38,7 @@ class S3DataConnect(object):
                                   Key = self.file)
 
     def write_s3_obj(self):
+        
         return self.s3.upload_file(Filename=self.file,
                                    Bucket=self.bucket,
                                    Key = self.get_attrib('outfile', self.file))

@@ -10,6 +10,7 @@ from common.tasks.create_config_class import create_config_class
 from common.tasks.read_layout import read_layout
 from common.classes.DatabaseInsertClass import DatabaseInsert
 from common.utils.general_funcs import generate_logger, print_df_to_log
+from common.classes.S3DataConnectClass import S3DataConnect
 
 from .classes.S3DataReadRawClass import S3DataReadRaw
 
@@ -35,10 +36,10 @@ def main(args=None):
 
     # create log - will create temp log then copy to bucket when complete
 
-    log = generate_logger(logdir = Path(config.PATHS['log_dir']) / 'load_data', logname = f"load_data_{table_name}", init_message=f"LOAD OF TABLE: {table_name}")
+    log = generate_logger(logname = f"load_data_{table_name}", init_message=f"LOAD OF TABLE: {table_name}")
 
     # call read_layout function to return layout for given table as df
-
+    
     layout_df = read_layout(table_name)
 
     # create s3 data class for given table - reads in raw data from s3 and converts to df following params given in tables_config
@@ -61,4 +62,9 @@ def main(args=None):
     # call batch execute method to insert to db table!
 
     dbinsert.sub_batch_execute_statement()
-    
+
+    # copy temp log to s3 bucket
+    logpath = log.root.handlers[0].baseFilename
+
+    S3DataConnect(config.DB_PARAMETERS['profile'], config.S3_BUCKETS['python_logs'], logpath, \
+                  outfile=logpath.split('\\')[-1]).write_s3_obj()
