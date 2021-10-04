@@ -1,5 +1,3 @@
-
-
 def add_attrib(cls):
     """
     function add_attrib to be used to decorate class to add method get_attrib()

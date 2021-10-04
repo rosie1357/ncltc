@@ -12,6 +12,7 @@ setup(
     entry_points={
         'console_scripts': [
             'load_data = load_data.cli:main',
+            'transform_data = transform_data.cli:main'
         ],
     },
 )

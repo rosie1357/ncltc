@@ -37,9 +37,6 @@ class DatabaseInsert(Database):
             - self.layout_df has columns 'colname' and 'sqltype' that map input df/db columns to the database type 
                 (e.g. DATE, CHAR(2), SMALLINT)
 
-            - any columns that should map to the database layout on self.df have the same names 
-                (e.g. if colname = 'CALYEAR' on self.layout_df, the column will also be named 'CALYEAR' on self.df)
-
         the method will identify all columns that are both in self.df.columns and listed in a record under 'colname' in self.layout_df and return
         a dictionary mapping colname to sqltype to pass to create_insert_statement() method
         

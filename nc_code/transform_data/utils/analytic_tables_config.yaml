@@ -1,0 +1,9 @@
+# analytic tables config file to list all SIMPLE table-specific information for tables that must be created from existing
+# tables with logic applied to be transformed into analytic tables (any non-trivial or categorical logic must be hard-coded into scripts)
+
+
+cndsXwalkAlt:
+  bucket_ref: raw_data
+
+
+
