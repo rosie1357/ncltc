@@ -45,8 +45,8 @@ def main(args=None):
     # create s3 data class for given table - reads in raw data from s3 and converts to df following params given in tables_config
     # use layout to create dictionary of renames to map raw col to db col name
     
-    DataTransform(analytic_tbl = table_name, input_tables = config.input_tables, db_params = vars(config)['DB_PARAMETERS'], log=log)
-    """
+    df = DataTransform(analytic_tbl = table_name, input_tables = config.input_tables, db_params = vars(config)['DB_PARAMETERS'], log=log).df_to_db
+
     # create dbinsert class for given table, passing all needed params to connect to database from config class
     
     dbinsert = DatabaseInsert(df = df, layout_df = layout_df, tbl = table_name, db_params = vars(config)['DB_PARAMETERS'], insert_type=insert_type, log=log)
@@ -65,5 +65,4 @@ def main(args=None):
     logpath = log.root.handlers[0].baseFilename
 
     S3DataConnect(config.DB_PARAMETERS['profile'], config.S3_BUCKETS['python_logs'], logpath, \
-                  outfile='load_data/' + logpath.split('\\')[-1]).write_s3_obj()
-    """
+                  outfile='transform_data/' + logpath.split('\\')[-1]).write_s3_obj()

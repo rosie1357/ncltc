@@ -68,5 +68,5 @@ class DatabasetoDataFrame(Database):
         
         """
 
-        return pd.concat(list(starmap(self.create_df_record, [(rec, self.pull_columns) for rec in self.records])))
+        return pd.concat(list(starmap(self.create_df_record, [(rec, self.pull_columns) for rec in self.records]))).reset_index(drop=True)
 
