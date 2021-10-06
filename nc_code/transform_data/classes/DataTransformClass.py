@@ -1,6 +1,9 @@
 
+from collections import defaultdict
 import pandas as pd
+from itertools import starmap
 
+from common.tasks.read_layout import read_layout
 from common.classes.DatabasetoDataFrameClass import DatabasetoDataFrame
 
 class DataTransform(object):
@@ -10,10 +13,11 @@ class DataTransform(object):
     """
 
 
-    def __init__(self, analytic_tbl, **kwargs):
+    def __init__(self, analytic_tbl, input_tables, db_params, log, **kwargs):
 
-        analytic_tbl = self.analytic_tbl
+        self.analytic_tbl, self.input_tables, self.db_params, self.log = analytic_tbl, input_tables, db_params, log
 
-        # initialize with parents args
+        # using DatabasetoDataFrame class, create dataframe from all tables in input_tables list
 
-        super().__init__(self.layout_df, self.tbl, self.db_params, self.log, self.pull_columns)
+        dfs = starmap(lambda *x: DatabasetoDataFrame(*x).create_df(), [(read_layout(tbl.split('.')[-1]), tbl, self.db_params, self.log) for tbl in self.input_tables])
+        

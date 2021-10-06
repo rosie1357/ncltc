@@ -3,7 +3,6 @@
 
 
 cndsXwalkAlt:
-  bucket_ref: raw_data
-
-
-
+  schema: rawdata
+  input_tables:
+    - rawdata.cndsXwalk

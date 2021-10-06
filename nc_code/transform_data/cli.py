@@ -30,7 +30,7 @@ def main(args=None):
     
     table_name, insert_type = args.table_name, args.insert_type
 
-    # create config class, reading in tables_config to add tables info to basic setup info
+    # create config class, reading in analytic_tables_config to add tables info to basic setup info
 
     config = create_config_class(**{'analytic_tables_config.yaml' : {'path' : Path(os.path.join(os.path.dirname( __file__ ),'utils')), 'outer_dict': table_name}})
 
@@ -45,8 +45,7 @@ def main(args=None):
     # create s3 data class for given table - reads in raw data from s3 and converts to df following params given in tables_config
     # use layout to create dictionary of renames to map raw col to db col name
     
-    df = DataTransform(layout_df = layout_df, tbl = table_name, db_params = vars(config)['DB_PARAMETERS'], log=log).df
-
+    DataTransform(analytic_tbl = table_name, input_tables = config.input_tables, db_params = vars(config)['DB_PARAMETERS'], log=log)
     """
     # create dbinsert class for given table, passing all needed params to connect to database from config class
     
