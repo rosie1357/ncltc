@@ -22,7 +22,9 @@ class DataTransform(object):
 
         self.df_dicts = self.create_dataframes()
 
-        self.df_to_db = self.apply_logic()
+        # create df_to_db by calling transform method specific to analytic table
+
+        self.df_to_db = eval(f"self.transform_{self.analytic_tbl}")()
         
         
     def create_dataframes(self):
@@ -32,27 +34,23 @@ class DataTransform(object):
         return {name : df for name, df in zip(self.input_tables, dfs)}
 
 
-    def apply_logic(self):
-
-        # TODO: Replace conditional logic with table-specific methods
+    def transform_cndsXwalkAlt(self):
 
         # apply specific logic for cndsXwalkAlt (take original xwalk from wide to long)
-
-        if self.analytic_tbl == 'cndsXwalkAlt':
             
-            df = self.df_dicts['rawdata.cndsXwalk']
-            
-            alt_ids = list(filter(lambda x: (x.startswith('CNDSID')) & (~x.endswith('CNDSID')), df.columns))
+        df = self.df_dicts['rawdata.cndsXwalk']
+        
+        alt_ids = list(filter(lambda x: (x.startswith('CNDSID')) & (~x.endswith('CNDSID')), df.columns))
 
-            # transpose xwalk to take from wide to long, dropping any recs with a missing transposed value (alternate ID)
+        # transpose xwalk to take from wide to long, dropping any recs with a missing transposed value (alternate ID)
 
-            xwalkt = pd.melt(df, id_vars=['CNDSID','BIRTHDATE','DEATHDATE'], value_vars=alt_ids).dropna(subset=['value'])
+        xwalkt = pd.melt(df, id_vars=['CNDSID','BIRTHDATE','DEATHDATE'], value_vars=alt_ids).dropna(subset=['value'])
 
-            # set any place-holder values of DTH_DT (1999-12-31) to null, create sequence number
+        # set any place-holder values of DTH_DT (1999-12-31) to null, create sequence number
 
-            xwalkt['DEATHDATE'] = xwalkt['DEATHDATE'].apply(lambda x: '' if x == '1999-12-31' else x)
+        xwalkt['DEATHDATE'] = xwalkt['DEATHDATE'].apply(lambda x: '' if x == '1999-12-31' else x)
 
-            xwalkt['CNDSSEQNUM'] = xwalkt.groupby(['CNDSID']).cumcount()+1
+        xwalkt['CNDSSEQNUM'] = xwalkt.groupby(['CNDSID']).cumcount()+1
 
-            return xwalkt.rename(columns={'value' : 'ALTCNDSID'}).sort_values(['CNDSID','CNDSSEQNUM'])
+        return xwalkt.rename(columns={'value' : 'ALTCNDSID'}).sort_values(['CNDSID','CNDSSEQNUM'])
 
