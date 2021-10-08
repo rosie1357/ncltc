@@ -57,4 +57,10 @@ nctracksInst:
       CARR_ID: str
       DMH_LME_BASE_NBR: str
 
+CLIVE:
+  bucket_ref: raw_data
+  infile: 2021.09.22 CLIVe Tenancy Dates for DHHS.csv
+  file_type: csv
+  
+
 
