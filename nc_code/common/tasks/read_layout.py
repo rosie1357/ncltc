@@ -5,12 +5,18 @@ import os
 from common.tasks.create_config_class import create_config_class
 from common.classes.S3DataConnectClass import S3DataReadExcel
 
-def read_layout(tblname, **kwargs):
+def read_layout(tblname, data_model, **kwargs):
     """
     Function to read in the Excel file database layout from s3 and return df with info for specific table
 
     params:
         tblname string: name of input table (corresponding excel sheet name)
+        data_model string: which data model should be used (raw or datamart)
+            options are:
+                - 'data_model_raw'
+                - 'data_model_datamart'
+            the value should correspond to the key specified in config to identify the specific data model
+
         **kwargs: the file name and bucket name that contain the model, will automatically use config to read in unless bucket_name specified -
             if bucket_name is specified in kwargs, will use that instead of config bucket/file path
 
@@ -30,7 +36,7 @@ def read_layout(tblname, **kwargs):
     else:
         config = create_config_class()
 
-        for name, value in zip(names, [config.DB_PARAMETERS['profile'], config.S3_BUCKETS['data_models'], config.FILES['data_model']]):
+        for name, value in zip(names, [config.DB_PARAMETERS['profile'], config.S3_BUCKETS['data_models'], config.FILES[data_model]]):
             exec(f"{name} = '{value}'")
 
     kwargs = {'renames' : {'NC Data Element Name' : 'rawcol', 'SQL Name' : 'colname', 'MySQL Type' : 'sqltype'}, \

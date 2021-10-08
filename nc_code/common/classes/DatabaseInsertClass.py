@@ -17,16 +17,16 @@ class DatabaseInsert(Database):
     
     """
 
-    def __init__(self, df, layout_df, tbl, db_params, insert_type, log):
+    def __init__(self, df, layout_df, tbl, schema, db_params, insert_type, log):
         
-        self.df, self.layout_df, self.tbl, self.insert_type, self.log = df, layout_df, tbl, insert_type, log
+        self.df, self.layout_df, self.tbl, self.schema, self.insert_type, self.log = df, layout_df, tbl, schema, insert_type, log
         super().__init__(db_params)
 
         self.colmapping_dict = self.gen_layout_mapping()
 
         self.param_batches, self.mismatches = self.gen_batch_inserts()
 
-        self.sql_insert = self.create_sql_insert(tbl = self.tbl, cols=[col for col in self.colmapping_dict.keys()])
+        self.sql_insert = self.create_sql_insert(tbl = self.tbl, cols=[col for col in self.colmapping_dict.keys()], schema=self.schema)
 
     def gen_layout_mapping(self):
         """
@@ -177,7 +177,7 @@ class DatabaseInsert(Database):
 
         # get number of recs already in table
 
-        recs0 = self.get_rec_count(tbl=self.tbl)
+        recs0 = self.get_rec_count(tbl=self.tbl, schema=self.schema)
         
         # if only-once, must check if any recs in table and if so, do NOT insert
 
@@ -190,7 +190,7 @@ class DatabaseInsert(Database):
         # if overwrite, delete all recs before inserting
 
         if self.insert_type == 'overwrite':
-            self.delete_all(tbl=self.tbl)
+            self.delete_all(tbl=self.tbl, schema=self.schema)
             self.log.info(f"--All records ({recs0}) deleted from database")
 
         # if append, just write # of records to log before inserting current recs
@@ -202,9 +202,9 @@ class DatabaseInsert(Database):
 
         for num, sql_parameter_sets in self.param_batches.items():
 
-            self.batch_execute_statement(sql = self.sql_insert, sql_parameter_sets = sql_parameter_sets)
+            self.batch_execute_statement(sql = self.sql_insert, sql_parameter_sets = sql_parameter_sets, schema=self.schema)
         
-        recs = self.get_rec_count(tbl=self.tbl)
+        recs = self.get_rec_count(tbl=self.tbl, schema=self.schema)
         self.log.info(f"--{recs} records inserted into database!")
 
 

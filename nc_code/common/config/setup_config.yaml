@@ -1,7 +1,8 @@
 # config setup for NC common module
 
 FILES:
-  data_model: NC AWS Data Model.xlsx
+  data_model_raw: NC AWS Data Model.xlsx
+  data_model_datamart: NC AWS Data Mart Data Model.xlsx
 
 S3_BUCKETS:
   raw_data: nctl-data-bucket-us-east-1-838494257041 
@@ -11,6 +12,7 @@ S3_BUCKETS:
 DB_PARAMETERS:
   schema_names: 
     raw: rawdata
+    datamart: datamart
   db_cluster_arn: arn:aws:rds:us-east-1:838494257041:cluster:nctcl-rds-db
   db_credentials_secrets_store_arn: arn:aws:secretsmanager:us-east-1:838494257041:secret:rds-db-credentials/cluster-CTRRD427C7XG7CJF7CVP3VSSPU/nctcldevadmin-skZIuQ
   profile: 838494257041_Project_Developer

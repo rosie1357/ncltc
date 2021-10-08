@@ -6,7 +6,6 @@ import pandas as pd
 from itertools import starmap
 
 from .DatabaseClass import Database
-from ..utils.db_util_funcs import convert_types
 
 class DatabasetoDataFrame(Database):
 
@@ -58,7 +57,7 @@ class DatabasetoDataFrame(Database):
         
         values = [list(value.items())[0][1] if not (list(value.items())[0][0]=='isNull') & (list(value.items())[0][1]==True) else pd.NA for value in response_rec]
         
-        # return dictionary with input column names and values to append to all other recs
+        # return one-rec dataframe with columns = input col names and values = values extracted from db
         
         return pd.DataFrame({col : [value] for col, value in zip(columns, values)})
 

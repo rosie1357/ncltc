@@ -12,7 +12,6 @@ class S3DataReadRaw(S3DataConnect):
     
     """
 
-
     def __init__(self, table_name, **kwargs):
 
         self.table_name = table_name

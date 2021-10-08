@@ -7,8 +7,10 @@ import boto3
 class Database(object):
 
     def __init__(self, db_params):
-
-        # set all database parameters (passed in from config class) as class attributes
+        """
+        set all database parameters (passed in from config class) as class attributes
+        
+        """
 
         for attrib, value in db_params.items():
             setattr(self, attrib, value)
@@ -24,18 +26,19 @@ class Database(object):
         session = boto3.Session(profile_name=self.profile)
         return session.client('rds-data', region_name=self.region)
 
-    def create_sql_insert(self, tbl, cols, schema='raw'):
+    def create_sql_insert(self, tbl, cols, schema):
 
         """
             method create_sql_insert to create sql insert statement to pass to batch_execute_statement, using input table and cols
 
             params:
                 tbl string: database table name to insert into
-                cols list: list of all columns to insert into 
-                schema string: schema to pull from, default is raw. 
+                cols list: list of all columns to insert into
+                schema string: key that maps to specific schema as defined in db_params
                     Options:
                         raw -> pulls from rawdata
-
+                        datamart -> pulls from datamart
+                
             returns string with sql statement to pass to batch_execute_statement
 
         """
@@ -43,7 +46,7 @@ class Database(object):
         return f"insert into {self.schema_names[schema]}.{tbl} ({', '.join(cols)}) values ({':' + ', :'.join(cols)})"
 
 
-    def execute_statement(self, sql, schema='raw'):
+    def execute_statement(self, sql, schema):
 
         """
             execute_statement method to wrap around any sql code to pass to the database.
@@ -51,10 +54,10 @@ class Database(object):
 
             params:
                 sql string: sql code to execute
-                schema string: schema to pull from, default is raw. 
+                schema string: key that maps to specific schema as defined in db_params
                     Options:
                         raw -> pulls from rawdata
-
+                        datamart -> pulls from datamart
             returns:
                 dictionary database response based on sql code
 
@@ -75,7 +78,7 @@ class Database(object):
 
         return response
 
-    def batch_execute_statement(self, sql, sql_parameter_sets, schema='raw'):
+    def batch_execute_statement(self, sql, sql_parameter_sets, schema):
 
         """
             batch_execute_statement function to wrap around a sql statement and a two-dimensional array (set of lists) as params,
@@ -84,9 +87,10 @@ class Database(object):
             params:
                 sql string: sql code to execute
                 sql_parameter_sets list: sql insert statements
-                schema string: schema to pull from, default is raw. 
+                schema string: key that maps to specific schema as defined in db_params
                     Options:
                         raw -> pulls from rawdata
+                        datamart -> pulls from datamart
 
             returns:
                 dictionary database response based on sql code
@@ -119,20 +123,32 @@ class Database(object):
 
         return response
 
-    def get_rec_count(self, tbl):
+    def get_rec_count(self, tbl, schema):
         """
         Method get_rec_count to return the record count from given table
+        params:
+            tbl string: table name
+            schema string: key that maps to specific schema as defined in db_params
+                    Options:
+                        raw -> pulls from rawdata
+                        datamart -> pulls from datamart
         """
 
-        response = self.execute_statement(sql = f"select count(1) from {tbl}")
+        response = self.execute_statement(sql = f"select count(1) from {tbl}", schema=schema)
         return list(response['records'][0][0].values())[0]
 
-    def delete_all(self, tbl):
+    def delete_all(self, tbl, schema):
         """
         Method delete_all to delete all recs from given table - confirms successful deletion
+        params:
+            tbl string: table name
+            schema string: key that maps to specific schema as defined in db_params
+                    Options:
+                        raw -> pulls from rawdata
+                        datamart -> pulls from datamart
         """
 
-        self.execute_statement(sql = f"delete from {tbl}")
-        recs = self.get_rec_count(tbl=tbl)
+        self.execute_statement(sql = f"delete from {tbl}", schema=schema)
+        recs = self.get_rec_count(tbl=tbl, schema=schema)
         
-        assert recs == 0, f"All records NOT deleted from table {tbl} - CHECK THIS"
+        assert recs == 0, f"All records NOT deleted from table {self.schema_names[schema]}.{tbl} - CHECK THIS"

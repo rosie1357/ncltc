@@ -15,20 +15,25 @@ from common.classes.S3DataConnectClass import S3DataConnect
 from .classes.S3DataReadRawClass import S3DataReadRaw
 
 def main(args=None):
-
-    # add args and parse out - at cli must give:
-    #   - name of table to insert into (will get table-specific info from tables_config)
-    #   - optional param insert_type, default = only-once
-    #        only-once: means the data should only be loaded ONCE (do not want to mistakenly load e.g. ref data twice)
-    #        overwrite: means ALL data currently in table should be deleted and new data inserted
-    #        append: means should leave all data currently in table as is, and just append new data
+    """
+     add args and parse out - at cli must give:
+       - name of table to insert into (will get table-specific info from tables_config)
+       - optional param schema to give schema for given table, default = raw (all data loaded with this module should be inserted into raw data)
+            raw: rawdata schema
+            datamart: datamart schema
+       - optional param insert_type, default = only-once
+            only-once: means the data should only be loaded ONCE (do not want to mistakenly load e.g. ref data twice)
+            overwrite: means ALL data currently in table should be deleted and new data inserted
+            append: means should leave all data currently in table as is, and just append new data
+    """
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--table_name', required=True)
+    parser.add_argument('--schema', required=False, default='raw', choices=['raw','datamart'])
     parser.add_argument('--insert_type', required=False, default='only-once', choices=['only-once','overwrite','append'])
     args = parser.parse_args()
     
-    table_name, insert_type = args.table_name, args.insert_type
+    table_name, schema, insert_type = args.table_name, args.schema, args.insert_type
 
     # create config class, reading in tables_config to add tables info to basic setup info
 
@@ -40,7 +45,7 @@ def main(args=None):
 
     # call read_layout function to return layout for given table as df
     
-    layout_df = read_layout(table_name)
+    layout_df = read_layout(tblname = table_name, data_model = f"data_model_{schema}")
 
     # create s3 data class for given table - reads in raw data from s3 and converts to df following params given in tables_config
     # use layout to create dictionary of renames to map raw col to db col name
@@ -51,7 +56,7 @@ def main(args=None):
     
     # create dbinsert class for given table, passing all needed params to connect to database from config class
     
-    dbinsert = DatabaseInsert(df = raw_df, layout_df = layout_df, tbl = table_name, db_params = vars(config)['DB_PARAMETERS'], insert_type=insert_type, log=log)
+    dbinsert = DatabaseInsert(df = raw_df, layout_df = layout_df, tbl = table_name, schema = schema, db_params = vars(config)['DB_PARAMETERS'], insert_type=insert_type, log=log)
 
     # write any mismatches to log
 
