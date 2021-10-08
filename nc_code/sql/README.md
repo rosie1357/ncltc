@@ -22,16 +22,16 @@ All scripts in the subfolder [create_tables](./create_tables) have been run in Q
 
 The layouts for each of the database tables are in the data model here: `N:\Project\51164_NC_Olmstead\MA1\2. Data Management\05 Database Design\NC AWS Data Model.xlsx`.
 
-The layout sheet is set up so that when cols A -- I are populated with the needed info for each column, formulas in col J will generate the SQL code to create each column. Col J then just needs to be copied and enclosed in an opening `'CREATE TABLE ...'` line with opening and closing parens.
+The layout sheet is set up so that when cols A -- H are populated with the needed info for each column, formulas in col I will generate the SQL code to create each column. Col I then just needs to be copied and enclosed in an opening `'CREATE TABLE ...'` line with opening and closing parens.
 
 Follow these steps to create a new database table:
 
 1. Create a new sheet in the Excel data model file linked above, with the name of the sheet corresponding to the intended new table name. Use the *calendarRef* sheet as a template.
    - Note that the table must go into a specific schema within the database cluster. Cell A1 of the layout should specify the schema AND new table name in the form of `schemaname.tablename` (e.g. rawdata.calendarRef).
 
-2. As mentioned above, col J will generate the SQL code to create each of the new columns. All of col J must just be sandwiched between the create table statement and opening and closing parens.
+2. As mentioned above, col I will generate the SQL code to create each of the new columns. All of col I must just be sandwiched between the create table statement and opening and closing parens.
 
-    For example, to create the table *calendarRef*, col J from the corresponding sheet just needs to be copied into a script with the additional SQL code appended:
+    For example, to create the table *calendarRef*, col I from the corresponding sheet just needs to be copied into a script with the additional SQL code appended:
 
     ```
     CREATE TABLE rawdata.calendarRef 
@@ -64,7 +64,7 @@ Follow these steps to create a new database table:
 
 All scripts in the subfolder [update_tables](./update_tables) have been run in Query Editor to update the database tables.
 
-These scripts are only needed if we find we need to alter an existing table. Reasons to do this would be if we found we needed to, e.g., make a text field longer after receiving new data with records that exceed the current length, or if we need to add a new column for additional analysis.
+These scripts are only needed if we find we need to alter an existing table in place (i.e. cannot drop and replace/reinsert all records). Reasons to do this would be if we found we needed to, e.g., make a text field longer after receiving new data with records that exceed the current length, or if we need to add a new column for additional analysis.
 
 Follow these steps to update a database table:
 

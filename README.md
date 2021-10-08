@@ -148,11 +148,45 @@ To load a raw data file to the database, you must do two things:
 
     There are optional parameters that can be specified in `readin_kwargs`, which will all be passed as additional parameters to the file read in command (e.g. pd.read_csv()). In the example above, the Calendar.txt file had to be read in as tab-delimited with the column CALMM specified as string to retain leading zeros.
 
-2. Submit at the command line using the entry point defined in [setup.py](setup.py), with one required (*--table_name*) and one optional (*--insert_type*) argument:
+2. Submit at the command line using the entry point defined in [setup.py](setup.py), with one required (*--table_name*) and two optional (*--schema, --insert_type*) arguments:
 
     ```bash
-    load_data --table_name calendarRef --insert_type overwrite
+    load_data --table_name calendarRef --schema raw --insert_type overwrite
     ```
     See the [cli.py](nc_code/load_data/cli.py) script for more information on the parameters.
 
-    After each run, a log will be generated in the directory specified as *log_dir* in the main [setup_config.yaml](nc_code/common/config/setup_config.yaml) file. The log will give input and output counts, and will print any records that were unable to be inserted into the database due to mismatch data type/length.
+    After each run, a log will be generated in the [S3 logs bucket](https://s3.console.aws.amazon.com/s3/buckets/nctlc-python-logs?region=us-east-1&prefix=load_data/&showversions=false) in the 'load_data' key (subfolder).
+
+### **2. transform_data**
+
+The module transform_data is the second main module, which reads in tables already created in the database to do specific transforms/apply business rules (i.e. not simply extracting and loading raw data). Almost all of the transformed tables will be inserted into the `datamart` schema. An exception is the table `cndsXwalkAlt`, which is created in the rawdata schema. This table is simply a transpose of `cndsXwalk`.
+
+**NOTE**: There is a set of SQL code with a separate README in the [sql](nc_code/sql) subfolder. This subfolder describes how to create/update each table in the database, which must happen before data load.
+
+To perform the transformations and load the transformed file to the database, you must do three things:
+1. Add an entry to the [analytic_tables_config.yaml](nc_code/transform_data/utils/analytic_tables_config.yaml) file for the given file. See the yaml file for examples of files that have been loaded.
+
+    As an example, here is the entry for the transposed CNDS xwalk file, which was inserted into the **cndsXwalkAlt** table in the database:
+
+    ```
+    cndsXwalkAlt:
+      input_tables:
+        - rawdata.cndsXwalk
+    ```
+
+    The outermost key is the name of the target table. The only other required parameter is:
+      - input_tables: a list of ALL input tables (in the form of schema.tablename) that must be pulled from the database and converted to dataframes to then perform all transformations to create the new analytic table.
+
+2. Add a method to [DataTransformClass.py](nc_code/transform_data/classes/DataTransformClass.py) with code to do all transformations and create analytic table from inputs.
+    - The method must be named `f"transform_{analytic_tbl}"()`.
+    - The input dataframes to be used in the method are created in the init method `self.create_dataframes()`. This method pulls all tables listed in `input_tables` above from the database and creates dataframes. The return from this method is a dictionary where the key = name of table and value = dataframe. This dictionary of tables will be used in the transform method.
+    - The return from this method must be a dataframe in the form of the analytic table to insert into the database.
+
+3. Submit at the command line using the entry point defined in [setup.py](setup.py), with one required (*--table_name*) and two optional (*--schema, --insert_type*) arguments:
+
+    ```bash
+    transform_data --table_name calendarRef --schema datamart --insert_type overwrite
+    ```
+    See the [cli.py](nc_code/transform_data/cli.py) script for more information on the parameters.
+
+    After each run, a log will be generated in the [S3 logs bucket](https://s3.console.aws.amazon.com/s3/buckets/nctlc-python-logs?region=us-east-1&prefix=transform_data/&showversions=false) in the 'transform_data' key (subfolder).
