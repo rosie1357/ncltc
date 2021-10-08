@@ -14,9 +14,9 @@ class DatabasetoDataFrame(Database):
     
     """
 
-    def __init__(self, layout_df, tbl, db_params, log, pull_columns=[]):
+    def __init__(self, layout_df, tbl, schema, db_params, log, pull_columns=[]):
         
-        self.layout_df, self.tbl, self.db_params, self.log, self.pull_columns = layout_df, tbl, db_params, log, pull_columns
+        self.layout_df, self.tbl, self.schema, self.db_params, self.log, self.pull_columns = layout_df, tbl, schema, db_params, log, pull_columns
         super().__init__(db_params)
 
         # if specific columns not requested (pull_columns is empty list), will pull ALL columns - must identify from df layout
@@ -34,7 +34,7 @@ class DatabasetoDataFrame(Database):
         response['records'] will return a list of lists of dictionaries, with each outer list = each database record
         """
 
-        response = self.execute_statement(sql = f"select {','.join(self.pull_columns)} from {self.tbl}")
+        response = self.execute_statement(sql = f"select {','.join(self.pull_columns)} from {self.tbl}", schema=self.schema)
         return response['records']
 
     @staticmethod        

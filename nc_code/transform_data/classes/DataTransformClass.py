@@ -28,7 +28,8 @@ class DataTransform(object):
         
     def create_dataframes(self):
         
-        dfs = starmap(lambda *x: DatabasetoDataFrame(*x).create_df(), [(read_layout(tbl.split('.')[-1]), tbl, self.db_params, self.log) for tbl in self.input_tables])
+        dfs = starmap(lambda *x: DatabasetoDataFrame(*x).create_df(), \
+            [(read_layout(tbl.split('.')[-1], f"data_model_{tbl.split('.')[0]}"), tbl, tbl.split('.')[0], self.db_params, self.log) for tbl in self.input_tables])
         
         return {name : df for name, df in zip(self.input_tables, dfs)}
 
@@ -45,9 +46,15 @@ class DataTransform(object):
 
         xwalkt = pd.melt(df, id_vars=['CNDSID','BIRTHDATE','DEATHDATE'], value_vars=alt_ids).dropna(subset=['value'])
 
-        # set any place-holder values of DTH_DT (1999-12-31) to null, create sequence number
+        # set any place-holder values of DTH_DT (1999-12-31) to null
 
         xwalkt['DEATHDATE'] = xwalkt['DEATHDATE'].apply(lambda x: '' if x == '1999-12-31' else x)
+
+        # drop duplicates by value (ALTCNDSID) - keep rec with highest value of CNDSID
+
+        xwalkt = xwalkt[xwalkt['CNDSID'] == xwalkt.groupby('value')['CNDSID'].transform('max')]
+
+        # add sequential rec count by CNDSID, return sorted df
 
         xwalkt['CNDSSEQNUM'] = xwalkt.groupby(['CNDSID']).cumcount()+1
 

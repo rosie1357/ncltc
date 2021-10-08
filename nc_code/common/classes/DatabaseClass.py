@@ -34,16 +34,16 @@ class Database(object):
             params:
                 tbl string: database table name to insert into
                 cols list: list of all columns to insert into
-                schema string: key that maps to specific schema as defined in db_params
+                schema string: schema to use
                     Options:
-                        raw -> pulls from rawdata
-                        datamart -> pulls from datamart
+                        rawdata
+                        datamart
                 
             returns string with sql statement to pass to batch_execute_statement
 
         """
 
-        return f"insert into {self.schema_names[schema]}.{tbl} ({', '.join(cols)}) values ({':' + ', :'.join(cols)})"
+        return f"insert into {schema}.{tbl} ({', '.join(cols)}) values ({':' + ', :'.join(cols)})"
 
 
     def execute_statement(self, sql, schema):
@@ -54,10 +54,10 @@ class Database(object):
 
             params:
                 sql string: sql code to execute
-                schema string: key that maps to specific schema as defined in db_params
+                schema string: schema to use
                     Options:
-                        raw -> pulls from rawdata
-                        datamart -> pulls from datamart
+                        rawdata
+                        datamart
             returns:
                 dictionary database response based on sql code
 
@@ -71,7 +71,7 @@ class Database(object):
 
         response = self.gen_rds_client().execute_statement(
             secretArn=self.db_credentials_secrets_store_arn,
-            database=self.schema_names[schema],
+            database=schema,
             resourceArn=self.db_cluster_arn,
             sql=sql
         )
@@ -87,10 +87,10 @@ class Database(object):
             params:
                 sql string: sql code to execute
                 sql_parameter_sets list: sql insert statements
-                schema string: key that maps to specific schema as defined in db_params
+                schema string: schema to use
                     Options:
-                        raw -> pulls from rawdata
-                        datamart -> pulls from datamart
+                        rawdata
+                        datamart
 
             returns:
                 dictionary database response based on sql code
@@ -115,7 +115,7 @@ class Database(object):
         """
         response = self.gen_rds_client().batch_execute_statement(
             secretArn=self.db_credentials_secrets_store_arn,
-            database=self.schema_names[schema],
+            database=schema,
             resourceArn=self.db_cluster_arn,
             sql=sql,
             parameterSets=sql_parameter_sets
@@ -128,10 +128,10 @@ class Database(object):
         Method get_rec_count to return the record count from given table
         params:
             tbl string: table name
-            schema string: key that maps to specific schema as defined in db_params
+            schema string: schema to use
                     Options:
-                        raw -> pulls from rawdata
-                        datamart -> pulls from datamart
+                        rawdata
+                        datamart
         """
 
         response = self.execute_statement(sql = f"select count(1) from {tbl}", schema=schema)
@@ -142,13 +142,13 @@ class Database(object):
         Method delete_all to delete all recs from given table - confirms successful deletion
         params:
             tbl string: table name
-            schema string: key that maps to specific schema as defined in db_params
+            schema string: schema to use
                     Options:
-                        raw -> pulls from rawdata
-                        datamart -> pulls from datamart
+                        rawdata
+                        datamart
         """
 
         self.execute_statement(sql = f"delete from {tbl}", schema=schema)
         recs = self.get_rec_count(tbl=tbl, schema=schema)
         
-        assert recs == 0, f"All records NOT deleted from table {self.schema_names[schema]}.{tbl} - CHECK THIS"
+        assert recs == 0, f"All records NOT deleted from table {schema}.{tbl} - CHECK THIS"

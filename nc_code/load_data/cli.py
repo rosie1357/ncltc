@@ -18,9 +18,9 @@ def main(args=None):
     """
      add args and parse out - at cli must give:
        - name of table to insert into (will get table-specific info from tables_config)
-       - optional param schema to give schema for given table, default = raw (all data loaded with this module should be inserted into raw data)
-            raw: rawdata schema
-            datamart: datamart schema
+       - optional param schema to give schema for given table, default = rawdata (all data loaded with this module should be inserted into rawdata)
+            rawdata
+            datamart
        - optional param insert_type, default = only-once
             only-once: means the data should only be loaded ONCE (do not want to mistakenly load e.g. ref data twice)
             overwrite: means ALL data currently in table should be deleted and new data inserted
@@ -29,7 +29,7 @@ def main(args=None):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--table_name', required=True)
-    parser.add_argument('--schema', required=False, default='raw', choices=['raw','datamart'])
+    parser.add_argument('--schema', required=False, default='rawdata', choices=['rawdata','datamart'])
     parser.add_argument('--insert_type', required=False, default='only-once', choices=['only-once','overwrite','append'])
     args = parser.parse_args()
     

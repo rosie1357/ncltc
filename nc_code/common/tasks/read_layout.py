@@ -13,7 +13,7 @@ def read_layout(tblname, data_model, **kwargs):
         tblname string: name of input table (corresponding excel sheet name)
         data_model string: which data model should be used (raw or datamart)
             options are:
-                - 'data_model_raw'
+                - 'data_model_rawdata'
                 - 'data_model_datamart'
             the value should correspond to the key specified in config to identify the specific data model
 
