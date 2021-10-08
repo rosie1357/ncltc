@@ -18,14 +18,15 @@ cndsXwalk:
 
 tcldStatus:
   bucket_ref: raw_data
-  infile: Individual_status_history_data_07192021.csv
+  infile: TCLDquarterly.csv
   file_type: csv
   fill_nulls:
-    Status End: '9999-12-31'
+    Status End Date: '9999-12-31'
   readin_kwargs:
     parse_dates:
-      - Status Begin
-      - Status End
+      - Status Start Date
+      - Status End Date
+      - Extract Date
 
 hearts:
   bucket_ref: raw_data
@@ -61,6 +62,6 @@ CLIVE:
   bucket_ref: raw_data
   infile: 2021.09.22 CLIVe Tenancy Dates for DHHS.csv
   file_type: csv
-  
+
 
 
