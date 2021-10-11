@@ -29,7 +29,7 @@ This section details the local computer setup that needs to be done before runni
 
 NOTE: These instructions assume python and Git are installed on your local computer, and local PATH variables are added accordingly. If they are not, create tickets for ITS to install them, following guidance in the [Data Science Handbook](https://mathematicampr.atlassian.net/wiki/spaces/DSEH/pages/456917237/How+to+Set+Up+Your+Computer).
 
-This project uses pipenv to manage package depencies, and to add the main  **1115-public-comments** as a package to then easily call the individual modules using entry points.
+This project uses pipenv to manage package depencies, and to add the main  **nc_code** as a package to then easily call the individual modules using entry points.
 
 To create the virtual environment using the [Pipfile](Pipfile), navigate to this folder in Git bash or terminal of your choice, and submit the following:
 
