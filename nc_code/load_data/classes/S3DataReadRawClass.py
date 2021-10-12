@@ -50,6 +50,19 @@ class S3DataReadRaw(S3DataConnect):
 
             df.rename(columns = self.renames, inplace=True)
 
+        # drop dups if specified in kwargs
+
+        if hasattr(self, 'drop_dups'):
+
+            df.drop_duplicates(subset=self.drop_dups['cols'], keep=self.drop_dups['keep'], inplace=True)
+
+        # hard-code drop for tcldStatus (drop recs with CNDSID > 10)
+        # TODO: Can we add this to tables_config instead of hard-coding?
+
+        if self.table_name == 'tcldStatus':
+
+            df = df.loc[df['CNDSID'].apply(lambda x: len(x) <= 10)]
+
         # all files can have erroneous extra blank lines - drop and return df
 
         return df.dropna(how='all')
