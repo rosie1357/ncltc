@@ -30,12 +30,22 @@ class DatabasetoDataFrame(Database):
     def pull_recs(self):
         """
         Method pull_recs to issue query to pull all recs and select cols from database table
+        Because of limit to how much can be pulled at once, must first get the # of records in the table,
+        then extract in chunks (similar to how the records are inserted with batch insert)
 
-        response['records'] will return a list of lists of dictionaries, with each outer list = each database record
+        response will return a list of lists of dictionaries, with each outer list = each database record
         """
 
-        response = self.execute_statement(sql = f"select {','.join(self.pull_columns)} from {self.tbl}", schema=self.schema)
-        return response['records']
+        nrecs = self.get_rec_count(tbl = self.tbl, schema = self.schema)
+        chunk=2000
+
+        response=[]
+
+        for i in range(0,nrecs,chunk):
+
+            response = response + self.execute_statement(sql = f"select {','.join(self.pull_columns)} from {self.tbl} limit {i}, {chunk}", schema=self.schema)['records']
+
+        return response
 
     @staticmethod        
     def create_df_record(response_rec, columns):
