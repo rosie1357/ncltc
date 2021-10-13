@@ -36,12 +36,12 @@ class DatabasetoDataFrame(Database):
         response will return a list of lists of dictionaries, with each outer list = each database record
         """
 
-        nrecs = self.get_rec_count(tbl = self.tbl, schema = self.schema)
-        chunk=2000
+        self.nrecs = self.get_rec_count(tbl = self.tbl, schema = self.schema)
+        chunk=5000
 
         response=[]
 
-        for i in range(0,nrecs,chunk):
+        for i in range(0,self.nrecs,chunk):
 
             response = response + self.execute_statement(sql = f"select {','.join(self.pull_columns)} from {self.tbl} limit {i}, {chunk}", schema=self.schema)['records']
 
@@ -77,5 +77,7 @@ class DatabasetoDataFrame(Database):
         
         """
 
-        return pd.concat(list(starmap(self.create_df_record, [(rec, self.pull_columns) for rec in self.records]))).reset_index(drop=True)
+        df = pd.concat(list(starmap(self.create_df_record, [(rec, self.pull_columns) for rec in self.records]))).reset_index(drop=True)
+
+        assert self.nrecs == df.shape[0], f"Count mismatch in creating df from {self.tbl} db table - expecting {self.nrecs} but pulled {df.shape[0]}"
 
