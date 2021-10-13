@@ -8,6 +8,7 @@ import common
 from common.tasks.read_layout import read_layout
 from common.utils.read_config import read_config
 from common.utils.general_funcs import get_absolute_path
+from common.utils.text_funcs import expand_range
 from common.classes.DatabasetoDataFrameClass import DatabasetoDataFrame
 
 class DataTransform(object):
@@ -92,12 +93,13 @@ class DataTransform(object):
 
         proc_map = read_config(config_path / 'mapper.yaml')['PROC_MAPPING']
 
+        # proc map is a dictionary with key = map category and value = list of either individual or ranges of proc codes.
+        # must use expand_range common function to expand any ranges within keys to list out indiv values
+
+        proc_map = {k : [j for i in list(map(expand_range, v)) for j in i] for k, v in proc_map.items()}
+
         # join services to xwalk (will then no longer need xwalk)
 
         df = self.merge_services_xwalk('rawdata.nctracksProf')
-        print(df.head())
-        print(df.shape)
-        print(df.columns)
-
 
 
