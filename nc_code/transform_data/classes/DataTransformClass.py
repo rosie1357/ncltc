@@ -1,8 +1,13 @@
 
 import pandas as pd
 from itertools import starmap
+import os
+from pathlib import Path
 
+import common
 from common.tasks.read_layout import read_layout
+from common.utils.read_config import read_config
+from common.utils.general_funcs import get_absolute_path
 from common.classes.DatabasetoDataFrameClass import DatabasetoDataFrame
 
 class DataTransform(object):
@@ -59,4 +64,14 @@ class DataTransform(object):
         xwalkt['CNDSSEQNUM'] = xwalkt.groupby(['CNDSID']).cumcount()+1
 
         return xwalkt.rename(columns={'value' : 'ALTCNDSID'}).sort_values(['CNDSID','CNDSSEQNUM'])
+
+    def transform_ProfSvcs(self):
+
+        # read in mapper to get map between proc code and category
+
+        config_path = get_absolute_path(common, 'config')
+
+        proc_map = read_config(config_path / 'mapper.yaml')['PROC_MAPPING']
+
+
 

@@ -1,0 +1,57 @@
+# config to create mappings
+
+# mapping of PROCCODE individual procedure code values to general MSRCODE value
+
+PROC_MAPPING:
+  ACTCNTI:
+    - H0040
+  FBCMI:
+    - S9484
+  PSRI:
+    - H2017
+  IPSSEI:
+    - H2023
+    - YP630
+  TMSI:
+    - YM120
+    - YP400
+    - YP401
+  CSTI:
+    - H2015
+  PSI:
+    - H0038
+    - YA308
+    - YA309
+    - YA366
+    - YA367
+  PDETI:
+    - 90791-90792
+    - 96130-96139
+  PSYCHI:
+    - 90832-90853
+    - H0035
+    - H0036
+    - YA386
+    - YA387
+    - YA401
+  MCMI:
+    - H2011
+  EMOOI:
+    - 99203-99215
+    - 99241-99245
+    - 99354
+    - S9480
+    - YP831
+  SUDSVCS:
+    - H2034
+    - H2035
+    - 99406
+    - H0010
+    - H0014
+    - H0015
+    - H0020
+    - YP790
+    - YP835
+  
+  
+  

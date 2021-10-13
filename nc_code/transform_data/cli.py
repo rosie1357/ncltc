@@ -52,7 +52,7 @@ def main(args=None):
     # use layout to create dictionary of renames to map raw col to db col name
     
     df = DataTransform(analytic_tbl = table_name, input_tables = config.input_tables, db_params = vars(config)['DB_PARAMETERS'], log=log).df_to_db
-
+        
     # create dbinsert class for given table, passing all needed params to connect to database from config class
     
     dbinsert = DatabaseInsert(df = df, layout_df = layout_df, tbl = table_name, schema = schema, db_params = vars(config)['DB_PARAMETERS'], insert_type=insert_type, log=log)
