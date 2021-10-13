@@ -102,4 +102,7 @@ class DataTransform(object):
 
         df = self.merge_services_xwalk('rawdata.nctracksProf')
 
+        # add MSRCODE using proc_map - set to 'OTHER' if not found
+
+        df['MSRCODE'] = df['PROCCODE'].apply(lambda x: ''.join([k for k, v in proc_map.items() if x in v]) or 'OTHER')
 
