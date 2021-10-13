@@ -34,6 +34,8 @@ tcldStatus:
       - Status Start Date
       - Status End Date
       - Extract Date
+    dtype:
+      Housing Slot Number: str
 
 hearts:
   bucket_ref: raw_data
