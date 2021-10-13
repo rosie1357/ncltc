@@ -5,9 +5,12 @@
 cndsXwalkAlt:
   schema: rawdata
   input_tables:
-    - rawdata.cndsXwalk
+    rawdata.cndsXwalk:
+      - '*'
 
 ProfSvcs:
   schema: datamart
   input_tables:
-    - rawdata.cndsXwalkAlt
+    rawdata.cndsXwalkAlt:
+      - CNDSID
+      - ALTCNDSID

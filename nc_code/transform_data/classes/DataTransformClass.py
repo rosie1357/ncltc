@@ -34,7 +34,8 @@ class DataTransform(object):
     def create_dataframes(self):
         
         dfs = starmap(lambda *x: DatabasetoDataFrame(*x).create_df(), \
-            [(read_layout(tbl.split('.')[-1], f"data_model_{tbl.split('.')[0]}"), tbl, tbl.split('.')[0], self.db_params, self.log) for tbl in self.input_tables])
+            [(read_layout(tbl.split('.')[-1], f"data_model_{tbl.split('.')[0]}"), tbl, tbl.split('.')[0], self.db_params, pull_columns, self.log) \
+                for tbl, pull_columns in self.input_tables.items()])
         
         return {name : df for name, df in zip(self.input_tables, dfs)}
 

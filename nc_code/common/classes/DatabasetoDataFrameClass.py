@@ -14,14 +14,14 @@ class DatabasetoDataFrame(Database):
     
     """
 
-    def __init__(self, layout_df, tbl, schema, db_params, log, pull_columns=[]):
+    def __init__(self, layout_df, tbl, schema, db_params, pull_columns, log):
         
-        self.layout_df, self.tbl, self.schema, self.db_params, self.log, self.pull_columns = layout_df, tbl, schema, db_params, log, pull_columns
+        self.layout_df, self.tbl, self.schema, self.db_params, self.pull_columns, self.log = layout_df, tbl, schema, db_params, pull_columns, log
         super().__init__(db_params)
 
-        # if specific columns not requested (pull_columns is empty list), will pull ALL columns - must identify from df layout
+        # if all columns are requested (pull_columns = *), will pull ALL columns - must identify from df layout
 
-        if len(self.pull_columns) == 0:
+        if self.pull_columns == '*':
             self.pull_columns = list(self.layout_df['colname'])
 
         self.records = self.pull_recs()
@@ -80,4 +80,6 @@ class DatabasetoDataFrame(Database):
         df = pd.concat(list(starmap(self.create_df_record, [(rec, self.pull_columns) for rec in self.records]))).reset_index(drop=True)
 
         assert self.nrecs == df.shape[0], f"Count mismatch in creating df from {self.tbl} db table - expecting {self.nrecs} but pulled {df.shape[0]}"
+
+        return df
 
