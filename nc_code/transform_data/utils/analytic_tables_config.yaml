@@ -14,3 +14,13 @@ ProfSvcs:
     rawdata.cndsXwalkAlt:
       - CNDSID
       - ALTCNDSID
+    rawdata.nctracksProf:
+      - CNDSID
+      - TCN
+      - CLMPDATE
+      - SVCBGN
+      - SVCEND
+      - LMEMCO
+      - LNERMBUNITAMT
+      - PROCCODE
+      - SERVCODE

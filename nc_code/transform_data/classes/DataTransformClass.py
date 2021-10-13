@@ -39,6 +39,24 @@ class DataTransform(object):
         
         return {name : df for name, df in zip(self.input_tables, dfs)}
 
+    def merge_services_xwalk(self, services_tbl, how='inner', left_on='ALTCNDSID', right_on='CNDSID', right_rename='SRCCNDSID'):
+        """
+        Method merge_services_xwalk to do the generic merge of the services table to the xwalk by ALT ID on the xwalk and regular ID on the services table
+        We want to keep the "master" CNDSID from the xwalk, and rename the ALT ID to SRCCNDSID.
+        params:
+            services_tbl (str): name of services table to use as key from self.df_dicts() to pull corresponding dataframe
+            all other params are optional:
+                how str: how to do join, default = inner
+                left_on str: col on left table (cndsXwalkAlt) to merge on, default = ALTCNDSID
+                right_on str: col on right table (services_tbl) to merge on, default = CNDSID
+                right_rename str: name to rename right col to, default = SRCCNDSID
+
+        
+        """
+
+        return pd.merge(left=self.df_dicts['rawdata.cndsXwalkAlt'], right=self.df_dicts[services_tbl].rename(columns={right_on : right_rename}), \
+             how=how, left_on=left_on, right_on=right_rename).drop(columns=['ALTCNDSID'])
+
 
     def transform_cndsXwalkAlt(self):
 
@@ -73,6 +91,13 @@ class DataTransform(object):
         config_path = get_absolute_path(common, 'config')
 
         proc_map = read_config(config_path / 'mapper.yaml')['PROC_MAPPING']
+
+        # join services to xwalk (will then no longer need xwalk)
+
+        df = self.merge_services_xwalk('rawdata.nctracksProf')
+        print(df.head())
+        print(df.shape)
+        print(df.columns)
 
 
 
