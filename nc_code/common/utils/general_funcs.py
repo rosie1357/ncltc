@@ -3,6 +3,7 @@ import time
 import tempfile
 import os
 from pathlib import Path
+import inspect
 
 def print_df_to_log(*, log, df, message, print_index=False):
     """
@@ -53,3 +54,16 @@ def generate_logger(*, logdir=None, logname, packages_suppress = ['boto3','botoc
         logging.info(f"{init_message}\n")
     
     return logging
+
+def get_absolute_path(module, *args):
+    """
+    Function get_absolute_path to return the absolute path to a given folder in a module
+    params:
+        module obj: name of base module, e.g. common (must be imported in script when passed to function)
+        args: individual names of all subdirectories to append to module main path, e.g. 'tasks', 'read_file'
+
+    returns:
+        path: path to folder
+    """
+
+    return Path(inspect.getfile(module)).parent / "\\".join(args)
