@@ -37,7 +37,7 @@ class DatabasetoDataFrame(Database):
         """
 
         self.nrecs = self.get_rec_count(tbl = self.tbl, schema = self.schema)
-        chunk=5000
+        chunk=2500
 
         response=[]
 

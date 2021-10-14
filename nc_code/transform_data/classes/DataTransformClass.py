@@ -3,6 +3,7 @@ import pandas as pd
 from itertools import starmap
 import os
 from pathlib import Path
+from datetime import datetime
 
 import common
 from common.tasks.read_layout import read_layout
@@ -39,6 +40,17 @@ class DataTransform(object):
                 for tbl, pull_columns in self.input_tables.items()])
         
         return {name : df for name, df in zip(self.input_tables, dfs)}
+
+    @staticmethod
+    def add_extract_date(df):
+        """
+        Method add_extract_date to add column EXTRACTDATE as current date to df to be loaded - static method so can be used outside of class
+        params:
+            df: dataframe to add column to
+        """
+
+        return df.assign(EXTRACTDATE=datetime.today().strftime('%Y-%m-%d'))
+
 
     def merge_services_xwalk(self, services_tbl, how='inner', left_on='ALTCNDSID', right_on='CNDSID', right_rename='SRCCNDSID'):
         """
@@ -100,9 +112,13 @@ class DataTransform(object):
 
         # join services to xwalk (will then no longer need xwalk)
 
-        df = self.merge_services_xwalk('rawdata.nctracksProf')
+        df = self.merge_services_xwalk('rawdata.nctracksProf').rename(columns={'LNERMBUNITAMT':'SVCUNITS'})
 
         # add MSRCODE using proc_map - set to 'OTHER' if not found
 
         df['MSRCODE'] = df['PROCCODE'].apply(lambda x: ''.join([k for k, v in proc_map.items() if x in v]) or 'OTHER')
+
+        # return df with EXTRACTDATE added
+
+        return self.add_extract_date(df)
 

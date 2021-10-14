@@ -149,7 +149,7 @@ class DatabaseInsert(Database):
         mismatches = pd.DataFrame()
         param_batches = {}
 
-        chunk=5000
+        chunk=2500
         list_tmp_df = [self.df.iloc[i:i+chunk] for i in range(0, self.df.shape[0],chunk)]
 
         for i in range(0,len(list_tmp_df)):
