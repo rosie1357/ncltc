@@ -67,3 +67,15 @@ def get_absolute_path(module, *args):
     """
 
     return Path(inspect.getfile(module)).parent / "\\".join(args)
+
+def get_intersection(lst1, lst2):
+    """
+    Function get_intersection to return the intersection (overlap) of two lists
+    params:
+        lst1: list
+        list2: list
+
+    returns:
+        list with intersection of unique elements
+    """
+    return list(set(lst1) & set(lst2))

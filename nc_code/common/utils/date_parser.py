@@ -1,4 +1,5 @@
 from dateutil.parser import parserinfo, parser
+import pandas as pd
 
 class parserinfo_century(parserinfo):
     """
@@ -21,3 +22,24 @@ def parse_century(timestr, **kwargs):
     Function parse_century to apply parserinfo_century class to parser and return date with 4-digit year as defined above
     """
     return parser(parserinfo_century()).parse(timestr, **kwargs)
+
+
+def attempt_parse(value, return_raw=False):
+    """
+    Function attempt_parse to attempt to parse a field to a date, otherwise return empty date or raw value
+    params:
+        value str/date
+        return_raw bool: if set to False (default), will return pd.NaT (missing datetime)
+            if set to True will return raw value
+
+    returns:
+        value as date if parses else input value
+    """
+
+    try:
+        return parser.parse(value)
+    except:
+        if return_raw:
+            return value
+        else:
+            return pd.NaT
