@@ -122,3 +122,57 @@ class DataTransform(object):
 
         return self.add_extract_date(df)
 
+    def inpStays_hearts_drop_directs(self, hearts_df):
+
+        """ 
+        Method inpStays_hearts_drop_directs to be called in main transform_inpStays
+        Applies BR 4.1.1 to hearts:
+            By CNDSID and ADMITDATE (sorted asc), identify the first record where prev_discharge_reason != Direct Discharge to Medical Visit
+            and drop all records before that
+        """
+
+        group_cols = ['CNDSID']
+        sort_cols=group_cols + ['ADMITDATE']
+
+        # identify the first record by CNDSID/ADMITDATE where previous discharge reason is NOT Direct Discharge to Medical Visit (can be NA)
+
+        hearts_df = hearts_df.sort_values(sort_cols).reset_index(drop=True).reset_index().rename(columns={'index':'new_index'})
+
+        first_record = hearts_df[hearts_df['PREVDISCHRSN'].fillna('X') != 'Direct Discharge to Medical Visit'].groupby(group_cols).first().rename(columns={'new_index':'first_keep'})
+
+        # Join back to full df to then drop any records in the same CNDSID/ADMITDATE group with index < selected index (ie first record(s) in group with Direct Discharge to Medical Visit)
+        # NOTE! first_keep will never be set if there were no records by CNDSID with a value other than Direct Discharge to Medical Visit
+        # must fill with max(hearts.index)+1 which will cause records to be dropped
+
+        joined = pd.merge(hearts_df, first_record['first_keep'], how = 'outer', left_on=group_cols, right_on=group_cols)
+        joined['first_keep'].fillna(max(hearts_df.index)+1, inplace=True)
+
+        return joined.loc[joined['new_index']>=joined['first_keep']]
+
+    def inpStays_hearts_drop_nonqual(self, hearts_df, drop_values):
+
+        """ 
+        Method inpStays_hearts_drop_nonqual to be called in main transform_inpStays
+        Applies BR 4.1.2 to hearts:
+            Drop all records where INSTCODE IN ('6','4','E','9'). 
+        """
+
+        return hearts_df.loc[~hearts_df['INSTCODE'].fillna('X').isin(drop_values)]
+
+    def transform_inpStays(self):
+
+        # apply BR 4.1 on hearts using pipe!
+
+        hearts = (self.df_dicts['rawdata.hearts'].
+                  pipe(self.inpStays_hearts_drop_directs).
+                  pipe(self.inpStays_hearts_drop_nonqual, ['6','4','E','9'])
+                  )
+
+
+
+
+        
+
+
+
+

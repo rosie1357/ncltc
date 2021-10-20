@@ -5,6 +5,8 @@
 import pandas as pd
 from itertools import starmap
 
+from common.utils.general_funcs import get_intersection
+from common.utils.date_parser import attempt_parse
 from .DatabaseClass import Database
 
 class DatabasetoDataFrame(Database):
@@ -81,5 +83,9 @@ class DatabasetoDataFrame(Database):
 
         assert self.nrecs == df.shape[0], f"Count mismatch in creating df from {self.tbl} db table - expecting {self.nrecs} but pulled {df.shape[0]}"
 
+        # all date fields are stored in db as strings - convert to dates
+
+        for col in get_intersection(self.layout_df.loc[self.layout_df['sqltype']=='DATE']['colname'], df.columns):
+            df[col] = df[col].apply(attempt_parse)
         return df
 

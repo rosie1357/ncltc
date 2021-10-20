@@ -24,3 +24,14 @@ ProfSvcs:
       - LNERMBUNITAMT
       - PROCCODE
       - SERVCODE
+
+inpStays:
+  schema: datamart
+  input_tables:
+    rawdata.hearts:
+      - CNDSID
+      - ADMITDATE
+      - DISCHDATE
+      - DISCHDEST
+      - INSTCODE
+      - PREVDISCHRSN
