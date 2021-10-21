@@ -122,7 +122,7 @@ class DataTransform(object):
 
         return self.add_extract_date(df)
 
-    def inpStays_hearts_drop_directs(self, hearts_df):
+    def inpStays_hearts_drop_directs(self, hearts_df, group_cols, sort_cols):
 
         """ 
         Method inpStays_hearts_drop_directs to be called in main transform_inpStays
@@ -130,9 +130,6 @@ class DataTransform(object):
             By CNDSID and ADMITDATE (sorted asc), identify the first record where prev_discharge_reason != Direct Discharge to Medical Visit
             and drop all records before that
         """
-
-        group_cols = ['CNDSID']
-        sort_cols=group_cols + ['ADMITDATE']
 
         # identify the first record by CNDSID/ADMITDATE where previous discharge reason is NOT Direct Discharge to Medical Visit (can be NA)
 
@@ -159,13 +156,41 @@ class DataTransform(object):
 
         return hearts_df.loc[~hearts_df['INSTCODE'].fillna('X').isin(drop_values)]
 
+    def inpStays_hearts_bridge(self, hearts_df, group_cols, sort_cols, sort_asc):
+        """
+        Method inpStays_hearts_bridge to be called in main transform_inpStays
+        
+        """
+
+        # TODO: Can we move any bridging to common functions?
+
+        hearts_df.sort_values(sort_cols, ascending=sort_asc, inplace=True)
+
+        # lag DISCHDATE to compare to PREVDISCHDATE
+
+        hearts_df['PRIOR_DISCHDATE'] = hearts_df.groupby(group_cols)['DISCHDATE'].shift(1)
+
+        # identify records to bridge to prior record
+
+        hearts_df['bridge'] = (hearts_df['PREVDISCHDATE']==hearts_df['PRIOR_DISCHDATE']) & \
+                              ((hearts_df['PREVDISCHRSN']=='Direct Discharge to Medical Visit') | \
+                              ((hearts_df['PREVDISCHRSN']!='Direct Discharge to Medical Visit') & (hearts_df['READMITDAYS']<4)))
+
+        # ... continue
+
+        return hearts_df
+
     def transform_inpStays(self):
 
         # apply BR 4.1 on hearts using pipe!
 
+        group_cols = ['CNDSID']
+        sort_cols=group_cols + ['ADMITDATE']
+
         hearts = (self.df_dicts['rawdata.hearts'].
-                  pipe(self.inpStays_hearts_drop_directs).
-                  pipe(self.inpStays_hearts_drop_nonqual, ['6','4','E','9'])
+                  pipe(self.inpStays_hearts_drop_directs, group_cols=group_cols, sort_cols=sort_cols).
+                  pipe(self.inpStays_hearts_drop_nonqual, ['6','4','E','9']).
+                  pipe(self.inpStays_hearts_bridge, group_cols=group_cols, sort_cols=sort_cols + ['DISCHDATE'], sort_asc=[True, True, False])
                   )
 
 

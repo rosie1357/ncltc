@@ -35,3 +35,4 @@ inpStays:
       - DISCHDEST
       - INSTCODE
       - PREVDISCHRSN
+      - READMITDAYS
