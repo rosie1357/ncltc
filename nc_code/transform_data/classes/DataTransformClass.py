@@ -159,6 +159,10 @@ class DataTransform(object):
     def inpStays_hearts_bridge(self, hearts_df, group_cols, sort_cols, sort_asc):
         """
         Method inpStays_hearts_bridge to be called in main transform_inpStays
+        Applied BR 4.2 to hearts:
+            Bridge all remaining HEARTS stays where either 
+                1) the previous discharge was due to medical reason for each CNDS, regardless of gap days, OR 
+                2) the gap between records was 3 days or fewer 
         
         """
 
@@ -176,7 +180,17 @@ class DataTransform(object):
                               ((hearts_df['PREVDISCHRSN']=='Direct Discharge to Medical Visit') | \
                               ((hearts_df['PREVDISCHRSN']!='Direct Discharge to Medical Visit') & (hearts_df['READMITDAYS']<4)))
 
-        # ... continue
+        # lag bridge to identify the record it should be bridged WITH
+
+        hearts_df['bridge_prior'] = hearts_df.groupby(group_cols)['bridge'].shift(-1).fillna(0)
+
+        # create a final indicator to be used in cumsum to create the stay ID for bridging
+
+        hearts_df['new_set'] = (hearts_df['bridge_prior']) & (hearts_df['bridge']==False).apply(lambda x: int(x))
+
+        # now use cumsum on new_set to identify sets within group to bridge
+
+        hearts_df['set_num'] = hearts_df.groupby(group_cols)['new_set'].cumsum()
 
         return hearts_df
 
