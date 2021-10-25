@@ -29,7 +29,7 @@ This README will explain how to set up the workspace environment, add your AWS c
 
 All code must be run in Amazon Workspaces for security reasons. Once your workspace is set up, this will operate just like your local machine.
 
-This section details the computer setup that needs to be done on workspaces before running ANY module. This setup only needs to be done **once** per user (unless the user changes computers/installs/etc).
+This section details the computer setup that needs to be done on your workspace before running ANY module. This setup only needs to be done **once** per user (unless the user changes computers/installs/etc).
 
 You must be invited to Workspaces, and a workspace must also be assigned to you. Ask Shruthi Ramesh to do this for you if she has not already.
 
@@ -187,6 +187,8 @@ To load a raw data file to the database, you must do two things:
 
     After each run, a log will be generated in the [S3 logs bucket](https://s3.console.aws.amazon.com/s3/buckets/nctlc-python-logs?region=us-east-1&prefix=load_data/&showversions=false) in the 'load_data' key (subfolder).
 
+    For the FINAL run of the table, move the log to the 'final' subfolder within the above subfolder.
+
 ### **2. transform_data**
 
 The module transform_data is the second main module, which reads in tables already created in the database to do specific transforms/apply business rules (i.e. not simply extracting and loading raw data). Almost all of the transformed tables will be inserted into the `datamart` schema. An exception is the table `cndsXwalkAlt`, which is created in the rawdata schema. This table is simply a transpose of `cndsXwalk`.
@@ -220,3 +222,5 @@ To perform the transformations and load the transformed file to the database, yo
     See the [cli.py](nc_code/transform_data/cli.py) script for more information on the parameters.
 
     After each run, a log will be generated in the [S3 logs bucket](https://s3.console.aws.amazon.com/s3/buckets/nctlc-python-logs?region=us-east-1&prefix=transform_data/&showversions=false) in the 'transform_data' key (subfolder).
+
+    For the FINAL run of the table, move the log to the 'final' subfolder within the above subfolder.
