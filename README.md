@@ -2,38 +2,57 @@
 
 The NCTLC repo contains code to populate the AWS database and create measures for the North Carolina Transition to Community Living Initiative Services project.
 
-This README will explain how to set up the local environment, add your AWS credentials, and submit the modules from the command line.
+This README will explain how to set up the workspace environment, add your AWS credentials, upload the file layouts to s3, and submit the modules from the command line.
 
-**Note**: There is currently only one module (*load_data*), but additional modules for data processing/measure creation will be added when created.
+**Note**: There are currently two modules (*load_data* and *transform_data*), but additional modules for data processing/measure creation will be added when created.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [**Local Setup**](#local-setup)
+- [**Workspace Setup**](#workspace-setup)
   - [**1. Environment Setup**](#1-environment-setup)
   - [**2. AWS Credentials**](#2-aws-credentials)
     - [**Create credentials empty files**](#create-credentials-empty-files)
     - [**Add project credentials**](#add-project-credentials)
     - [**Confirm credentials**](#confirm-credentials)
+- [**Database Layout Files to S3**](#database-layout-files-to-s3)
 - [**Running the Modules**](#running-the-modules)
   - [**1. load_data**](#1-load_data)
+  - [**2. transform_data**](#2-transform_data)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## **Local Setup**
+## **Workspace Setup**
 
 ### **1. Environment Setup**
 
-This section details the local computer setup that needs to be done before running ANY module. This setup only needs to be done **once** per user (unless the user changes computers/installs/etc).
+All code must be run in Amazon Workspaces for security reasons. Once your workspace is set up, this will operate just like your local machine.
 
-NOTE: These instructions assume python and Git are installed on your local computer, and local PATH variables are added accordingly. If they are not, create tickets for ITS to install them, following guidance in the [Data Science Handbook](https://mathematicampr.atlassian.net/wiki/spaces/DSEH/pages/456917237/How+to+Set+Up+Your+Computer).
+This section details the computer setup that needs to be done on workspaces before running ANY module. This setup only needs to be done **once** per user (unless the user changes computers/installs/etc).
+
+You must be invited to Workspaces, and a workspace must also be assigned to you. Ask Shruthi Ramesh to do this for you if she has not already.
+
+I forget what was already installed for me when I created my environment in Workspaces, but I either downloaded or saw the following were all there (I know I at least had to download Anaconda3):
+- Anaconda3
+- VSCode
+- Git
+
+Set up your environment and path variables following the DSE instructions:
+ [Data Science Handbook](https://mathematicampr.atlassian.net/wiki/spaces/DSEH/pages/456917237/How+to+Set+Up+Your+Computer).
 
 This project uses pipenv to manage package depencies, and to add the main  **nc_code** as a package to then easily call the individual modules using entry points.
 
-To create the virtual environment using the [Pipfile](Pipfile), navigate to this folder in Git bash or terminal of your choice, and submit the following:
+Navigate to a local folder on your Workspace where you want to clone this repo and type the following in Git bash or terminal of your choice:
 
 ```bash
+git clone https://github.com/mathematica-mpr/nctcl.git
+```
+
+To install pip and create the virtual environment using the [Pipfile](Pipfile), navigate to this folder and submit the following:
+
+```bash
+pip install pipenv
 pipenv update
 ```
 
@@ -57,11 +76,11 @@ Once you are able to sign in, you will need to add credentials to the environmen
 
 - Go to the home directory on your local machine (using File Explorer or command line is fine)
 
-    - If you don't know where your home directory is, you can run the following command in Git bash to return the path (note that it's probably `C:/Users/USERNAME`):
+    - If you don't know where your home directory is, you can run the following command in Git bash to return the path (note that it's probably `D:/Users/USERNAME`):
 ```bash
 echo $HOME
 ```
-- In the home directory there may already be a subfolder called `/.aws`. If the folder is not there, create it. Make sure to include the '.' before 'aws'.
+- In the home directory create a folder called `/.aws`. Make sure to include the '.' before 'aws'.
 
 - Within the `/.aws` folder, create two new files called `credentials` and `config` (no file extension). You can do this two ways:
 
@@ -116,6 +135,17 @@ aws configure --profile 838494257041_Project_Developer
  See [AWS docs](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) for more details on using `awscli`.
 
 The default values returned should be the new credentials (with all but the last four characters masked).
+
+## **Database Layout Files to S3**
+
+The modules read the database layout files from S3. The files are mainly updated by Kent/analysts on N here: `N:\Project\51164_NC_Olmstead\MA1\2. Data Management\05 Database Design`.
+
+The two files are:
+- `NC AWS Data Model.xlsx` (raw data)
+- `NC AWS Data Mart Data Model.xlsx` (transformed **'datamart'** data)
+
+I don't know how much more they will be changed, but if you see they have been, upload the new versions to the [data-models bucket](https://s3.console.aws.amazon.com/s3/buckets/nctlc-data-models?region=us-east-1&tab=objects).
+Note the bucket is version-controlled so you do not need to worry about overwriting versions - you can always get them back!
 
 ## **Running the Modules**
 
